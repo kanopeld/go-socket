@@ -96,7 +96,7 @@ func (c *Client) On(name string, callback ClientEventCallback) {
 func (c *Client) send(t PackageType, name string, data string) {
 	msg := Message{
 		EventName:name,
-		Data:MessagePayload{data:[]byte(data)},
+		Data:MessagePayload{Data:[]byte(data)},
 	}
 
 	p, err := NewEventPacket(msg)

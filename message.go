@@ -3,7 +3,7 @@ package socket
 import "encoding/json"
 
 type MessagePayload struct {
-	data []byte
+	Data []byte
 }
 
 type Message struct {
@@ -16,5 +16,5 @@ func (m *Message) MarshalBinary() ([]byte, error) {
 }
 
 func (mp *MessagePayload) String() (string) {
-	return string(mp.data)
+	return string(mp.Data)
 }

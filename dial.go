@@ -47,7 +47,7 @@ func (d *Dial) sendError() {
 func (d *Dial) send(t PackageType, name string, data string) {
 	msg := Message{
 		EventName:name,
-		Data:MessagePayload{data:[]byte(data)},
+		Data:MessagePayload{Data:[]byte(data)},
 	}
 
 	p, err := NewEventPacket(msg)
