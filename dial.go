@@ -23,24 +23,39 @@ func NewDial(addr string) (*Dial, error) {
 	}
 	d.c = conn
 
-	d.send(_CONNECTION, CONNECTION_NAME, "")
+	d.sendConnect()
 
 	go d.loop()
 	return d, nil
 }
 
-func (d *Dial) send(t int, name string, data string) error {
-	msg, err := NewEncodeMessage(t, name, data)
-	if err != nil {
-		return err
+func (d *Dial) sendConnect() {
+	p := NewPacket(_PACKET_TYPE_CONNECT)
+	d.c.Write(p.MarshalBinary())
+}
+
+func (d *Dial) sendDisconnect() {
+	p := NewPacket(_PACKET_TYPE_DISCONNECT)
+	d.c.Write(p.MarshalBinary())
+}
+
+func (d *Dial) sendError() {
+	p := NewPacket(_PACKET_TYPE_ERROR)
+	d.c.Write(p.MarshalBinary())
+}
+
+func (d *Dial) send(t PackageType, name string, data string) {
+	msg := Message{
+		EventName:name,
+		Data:MessagePayload{data:[]byte(data)},
 	}
 
-	_, err = d.c.Write([]byte(msg))
+	p, err := NewEventPacket(msg)
 	if err != nil {
-		return err
+		return
 	}
 
-	return nil
+	d.c.Write(p.MarshalBinary())
 }
 
 func (d *Dial) loop() {
@@ -59,20 +74,32 @@ func (d *Dial) loop() {
 			continue
 		}
 
-		dec, err := NewMessageDecoder(msg)
+		p, err := DecodePackage(msg)
 		if err != nil {
 			continue
 		}
 
-		switch dec.mt {
-		case _EVENT:
-			d.ad.Call(dec.eventName, dec.payload)
+		switch p.PT {
+		case _PACKET_TYPE_DISCONNECT:
+			d.ad.Call(DISCONNECTION_NAME, "")
+			d.Close()
+		case _PACKET_TYPE_EVENT:
+			msg ,err := DecodeMessage(p.Payload)
+			if err != nil {
+				continue
+			}
+
+			d.ad.Call(msg.EventName, msg.Data.String())
+		default:
+			d.ad.Call(ERROR_EVENT, "")
+			d.ad.Call(DISCONNECTION_NAME, "")
+			d.Close()
 		}
 	}
 }
 
 func (d *Dial) Close() {
-	d.send(_DISCCONNECTION, DISCONNECTION_NAME, "")
+	d.sendDisconnect()
 	d.cl = true
 	d.l = false
 	d.c.Close()
@@ -83,5 +110,5 @@ func (d *Dial) On(name string, callback ClientEventCallback) {
 }
 
 func (d *Dial) Send(name string, data string) {
-	d.send(_EVENT, name, data)
+	d.send(_PACKET_TYPE_EVENT, name, data)
 }

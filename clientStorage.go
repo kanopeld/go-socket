@@ -3,36 +3,30 @@ package socket
 import "sync"
 
 type ClientStorage struct {
-	list []*Client
+	list map[string]*Client
 	sync.Mutex
 }
 
 func NewClientStorage() *ClientStorage {
 	ncs := new(ClientStorage)
-	ncs.list = make([]*Client, 0)
+	ncs.list = make(map[string]*Client, 0)
 	return ncs
 }
 
 func (cs *ClientStorage) Push(c *Client) (int) {
 	cs.Lock()
-	cs.list = append(cs.list, c)
+	cs.list[c.ID()] = c
 	l := len(cs.list)
 	cs.Unlock()
 
 	return l
 }
 
-func (cs *ClientStorage) RemoveByID(id string) {
+func (cs *ClientStorage) Remove(id string) int {
 	cs.Lock()
-	temp := make([]*Client, len(cs.list))
-	for _, c := range cs.list {
-		if c.id != id {
-			temp = append(temp, c)
-		}
-
-		c.Close()
-	}
-
-	cs.list = temp
+	delete(cs.list, id)
+	l := len(cs.list)
 	cs.Unlock()
+
+	return l
 }

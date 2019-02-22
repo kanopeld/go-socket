@@ -45,7 +45,6 @@ func (s *Server) loop() {
 		}
 
 		s.cs.Push(nc)
-		nc.loop()
 	}
 }
 
@@ -53,7 +52,7 @@ func (s *Server) observeClient() {
 	for {
 		select {
 		case cC := <- s.closeClientChan:
-			s.cs.RemoveByID(cC.id)
+			s.cs.Remove(cC.id)
 		}
 	}
 }
