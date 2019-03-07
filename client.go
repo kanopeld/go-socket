@@ -5,43 +5,46 @@ import (
 	"bufio"
 	"strconv"
 	"time"
-	"math/rand"
 )
 
-type Client struct {
-	conn net.Conn
-	id string
-	l bool
-	c bool
-	ad ClientAdaptor
-	defAd Adaptor
-	cC chan <- closeClient
+type Client interface {
+	ID() string
+
+	Connection() net.Conn
+
+	On(event string, f interface{}) error
+
+	Off(event string) bool
+
+	Emit(event string, data []byte) error
+
+	Disconnect()
 }
 
-func newClient(conn net.Conn, dad Adaptor, cC chan closeClient) (*Client, error) {
-	nc := new(Client)
-	nc.conn = conn
-	nc.id = GetHash(strconv.Itoa(int(time.Now().Unix())) + strconv.FormatUint(rand.Uint64(), 10))
-	nc.ad = GetClientAdapptor()
-	nc.defAd = dad
-	nc.cC = cC
+type client struct {
+	*clientHandler
+	conn net.Conn
+	id string
+}
+
+func newClient(conn net.Conn, base *baseHandler) (Client, error) {
+	nc := &client{
+		conn: conn,
+		id:GetHash(strconv.Itoa(int(time.Now().Unix())) + conn.RemoteAddr().String()),
+	}
+	nc.clientHandler = newClientHandler(nc, base)
 
 	go nc.loop()
-
 	return nc, nil
 }
 
-func (c *Client) loop() {
-	defer func() {
-		c.Close()
-	}()
-
-	if c.l || c.c {
+func (c *client) loop() {
+	if err := c.send(& Package{PT:_PACKET_TYPE_CONNECT, Payload:[]byte(c.id)}); err != nil {
+		c.Disconnect()
 		return
 	}
 
-	c.l = true
-	for c.l {
+	for {
 		msg, err := bufio.NewReader(c.conn).ReadBytes('\n')
 		if err != nil {
 			continue
@@ -54,75 +57,50 @@ func (c *Client) loop() {
 
 		switch p.PT {
 		case _PACKET_TYPE_CONNECT:
-			ev := c.defAd.GetEvent(CONNECTION_NAME)
-			if ev == nil {
-				continue
+			if err := c.call(CONNECTION_NAME, nil); err != nil {
+				c.Disconnect()
+				return
 			}
-			ev.callback(*c, "")
 		case _PACKET_TYPE_DISCONNECT:
-			c.ad.Call(DISCONNECTION_NAME, "")
-			c.Close()
+			c.Disconnect()
+			return
 		case _PACKET_TYPE_EVENT:
 			msg ,err := DecodeMessage(p.Payload)
 			if err != nil {
 				continue
 			}
 
-			c.ad.Call(msg.EventName, msg.Data.String())
-		default:
-			c.defAd.Call(ERROR_EVENT, "", c)
-			c.defAd.Call(DISCONNECTION_NAME, "", c)
-			c.Close()
+			if err := c.call(msg.EventName, msg.Data); err != nil {
+				c.Disconnect()
+				return
+			}
 		}
 	}
 }
 
-func (c *Client) Close() {
-	c.sendDisconnect()
-	c.l = false
-	c.c = true
-	c.cC <- closeClient{id:c.id}
-	c.conn.Close()
+func (c *client) Emit(event string, data []byte) error {
+	b, err := Message{EventName:event,Data:data}.MarshalBinary()
+	if err != nil {
+		return err
+	}
+	return c.send(&Package{PT:_PACKET_TYPE_EVENT, Payload:b})
 }
 
-func (c *Client) ID() string {
+func (c *client) ID() string {
 	return c.id
 }
 
-func (c *Client) On(name string, callback ClientEventCallback) {
-	c.ad.On(name, callback)
+func (c *client) Connection() net.Conn {
+	return c.conn
 }
 
-func (c *Client) send(t PackageType, name string, data string) {
-	msg := Message{
-		EventName:name,
-		Data:MessagePayload{Data:[]byte(data)},
-	}
-
-	p, err := NewEventPacket(msg)
-	if err != nil {
-		return
-	}
-
-	c.conn.Write(p.MarshalBinary())
+func (c *client) Disconnect() {
+	c.send(&Package{PT:_PACKET_TYPE_DISCONNECT})
+	c.call(DISCONNECTION_NAME, nil)
+	c.conn.Close()
 }
 
-func (c *Client) Send(name string, data string) {
-	c.send(_PACKET_TYPE_EVENT, name, data)
-}
-
-
-func (c *Client) sendConnect() {
-	p := NewPacket(_PACKET_TYPE_CONNECT)
-	c.conn.Write(p.MarshalBinary())
-}
-
-func (c *Client) sendDisconnect() {
-	p := NewPacket(_PACKET_TYPE_DISCONNECT)
-	c.conn.Write(p.MarshalBinary())
-}
-
-func (c *Client) sendError() {
-	p := NewPacket(_PACKET_TYPE_ERROR)
-	c.conn.Write(p.MarshalBinary())
+func (c *client) send(p *Package) error {
+	_, err := c.conn.Write(p.MarshalBinary())
+	return err
 }

@@ -4,7 +4,6 @@ const (
 	_PACKET_TYPE_CONNECT PackageType = 0x00
 	_PACKET_TYPE_DISCONNECT PackageType = 0x01
 	_PACKET_TYPE_EVENT PackageType = 0x02
-	_PACKET_TYPE_ERROR PackageType = 0x03
 )
 
 type PackageType byte
@@ -27,7 +26,7 @@ type Package struct {
 	Payload []byte
 }
 
-func (p *Package) MarshalBinary() ([]byte) {
+func (p *Package) MarshalBinary() []byte {
 	b := make([]byte, 1)
 	b[0] = p.PT.byte()
 	if len(p.Payload) > 0 {
@@ -40,18 +39,4 @@ func (p *Package) MarshalBinary() ([]byte) {
 
 func NewPacket(pt PackageType) Package {
 	return Package{PT:pt}
-}
-
-func NewEventPacket(m Message) (Package, error) {
-	md, err := m.MarshalBinary()
-	p := Package{
-		PT:_PACKET_TYPE_EVENT,
-		Payload:md,
-	}
-
-	if err != nil {
-		return p , err
-	}
-
-	return p, nil
 }

@@ -1,35 +1,30 @@
 package socket
 
-import "net"
+import (
+	"net"
+	"github.com/labstack/gommon/log"
+	"sync"
+)
 
 type Server struct {
+	*baseHandler
 	ln net.Listener
-	cs *ClientStorage
-	ad Adaptor
-	clC bool
-	closeClientChan chan closeClient
+	r bool
+	sync.Mutex
 }
-
-type closeClient struct {
-	id string
-}
-
-func NewServer(p string) (s *Server, err error) {
+func NewServer(p string) (*Server, error) {
 	ln, err := net.Listen("tcp", p)
 	if err != nil {
-		return
+		return nil, err
 	}
 
-	s = &Server{
+	s := &Server{
+		baseHandler: newBaseHandler(),
 		ln:ln,
-		cs:NewClientStorage(),
-		ad:GetDefaultAdaptor(),
 	}
 
 	go s.loop()
-	go s.observeClient()
-
-	return
+	return s, nil
 }
 
 func (s *Server) loop() {
@@ -39,28 +34,26 @@ func (s *Server) loop() {
 			continue
 		}
 
-		nc, err := newClient(conn, s.ad, s.closeClientChan)
+		_, err = newClient(conn, s.baseHandler)
 		if err != nil {
-			continue
-		}
-
-		s.cs.Push(nc)
-	}
-}
-
-func (s *Server) observeClient() {
-	for {
-		select {
-		case cC := <- s.closeClientChan:
-			s.cs.Remove(cC.id)
+			log.Printf("Error create new client instance. Error: %s", err.Error())
 		}
 	}
 }
 
-func (s *Server) Close() {
+func (s *Server) Start() {
+	go s.loop()
+	if s.r {
+		return
+	}
+
+	s.r = true
+	for s.r {
+
+	}
+}
+
+func (s *Server) Stop() {
+	s.r = false
 	s.ln.Close()
-}
-
-func (s *Server) On(name string, callback EventCallback) {
-	s.ad.On(name, callback)
 }

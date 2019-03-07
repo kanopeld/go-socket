@@ -3,73 +3,71 @@ package socket
 import (
 	"net"
 	"bufio"
+	"sync"
 )
 
-type Dial struct {
-	c net.Conn
-	ad ClientAdaptor
-	l bool
-	cl bool
+type dial struct {
+	*clientHandler
+	conn net.Conn
+	id string
 }
 
-func NewDial(addr string) (*Dial, error) {
-	d := &Dial{
-		ad:GetClientAdapptor(),
-	}
-
+func NewDial(addr string) (Client, error) {
 	conn, err := net.Dial("tcp", addr)
 	if err != nil {
 		return nil, err
 	}
-	d.c = conn
 
+	d := &dial{
+		conn:conn,
+	}
+	d.clientHandler = newClientHandler(d, &baseHandler{events:make(map[string]*caller, 0), name:BASE_HANDLER_DEFAULT_NAME, evMu:sync.Mutex{}})
 	d.sendConnect()
 
 	go d.loop()
 	return d, nil
 }
 
-func (d *Dial) sendConnect() {
+func (d *dial) ID() string {
+	return d.id
+}
+
+func (d *dial) Connection() net.Conn {
+	return d.conn
+}
+
+func (d *dial) sendConnect() {
 	p := NewPacket(_PACKET_TYPE_CONNECT)
-	d.c.Write(p.MarshalBinary())
+	d.conn.Write(p.MarshalBinary())
 }
 
-func (d *Dial) sendDisconnect() {
+func (d *dial) sendDisconnect() {
 	p := NewPacket(_PACKET_TYPE_DISCONNECT)
-	d.c.Write(p.MarshalBinary())
+	d.conn.Write(p.MarshalBinary())
 }
 
-func (d *Dial) sendError() {
-	p := NewPacket(_PACKET_TYPE_ERROR)
-	d.c.Write(p.MarshalBinary())
+func (d *dial) Disconnect() {
+	d.sendDisconnect()
+	d.call(DISCONNECTION_NAME, nil)
+	d.conn.Close()
 }
 
-func (d *Dial) send(t PackageType, name string, data string) {
-	msg := Message{
-		EventName:name,
-		Data:MessagePayload{Data:[]byte(data)},
-	}
+func (d *dial) send(p *Package) error {
+	_, err := d.conn.Write(p.MarshalBinary())
+	return err
+}
 
-	p, err := NewEventPacket(msg)
+func (d *dial) Emit(event string, data []byte) error {
+	b, err := Message{EventName:event,Data:data}.MarshalBinary()
 	if err != nil {
-		return
+		return err
 	}
-
-	d.c.Write(p.MarshalBinary())
+	return d.send(&Package{PT:_PACKET_TYPE_EVENT, Payload:b})
 }
 
-func (d *Dial) loop() {
-	defer func() {
-		d.Close()
-	}()
-
-	if d.l || d.cl {
-		return
-	}
-
-	d.l = true
-	for d.l {
-		msg, err := bufio.NewReader(d.c).ReadBytes('\n')
+func (d *dial) loop() {
+	for {
+		msg, err := bufio.NewReader(d.conn).ReadBytes('\n')
 		if err != nil {
 			continue
 		}
@@ -80,35 +78,24 @@ func (d *Dial) loop() {
 		}
 
 		switch p.PT {
+		case _PACKET_TYPE_CONNECT:
+			d.id = string(p.Payload)
+			if err := d.call(CONNECTION_NAME, nil); err != nil {
+				d.Disconnect()
+				return
+			}
 		case _PACKET_TYPE_DISCONNECT:
-			d.ad.Call(DISCONNECTION_NAME, "")
-			d.Close()
+			d.Disconnect()
 		case _PACKET_TYPE_EVENT:
 			msg ,err := DecodeMessage(p.Payload)
 			if err != nil {
 				continue
 			}
 
-			d.ad.Call(msg.EventName, msg.Data.String())
-		default:
-			d.ad.Call(ERROR_EVENT, "")
-			d.ad.Call(DISCONNECTION_NAME, "")
-			d.Close()
+			if err := d.call(msg.EventName, msg.Data); err != nil {
+				d.Disconnect()
+				return
+			}
 		}
 	}
-}
-
-func (d *Dial) Close() {
-	d.sendDisconnect()
-	d.cl = true
-	d.l = false
-	d.c.Close()
-}
-
-func (d *Dial) On(name string, callback ClientEventCallback) {
-	d.ad.On(name, callback)
-}
-
-func (d *Dial) Send(name string, data string) {
-	d.send(_PACKET_TYPE_EVENT, name, data)
 }
