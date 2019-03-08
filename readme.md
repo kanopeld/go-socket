@@ -32,7 +32,7 @@ Example usage
     		panic(err)
     	}
     
-        //this method will block next code and wait when program finish or will called Stop() method, that it run in goroutine
+        //this method will block next code and wait when program finish or will called Stop() method
     	go s.Start()
     
     	d, err := NewDial("localhost:6500")

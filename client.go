@@ -5,6 +5,8 @@ import (
 	"bufio"
 	"strconv"
 	"time"
+	"crypto/md5"
+	"encoding/hex"
 )
 
 type Client interface {
@@ -30,7 +32,7 @@ type client struct {
 func newClient(conn net.Conn, base *baseHandler) (Client, error) {
 	nc := &client{
 		conn: conn,
-		id:GetHash(strconv.Itoa(int(time.Now().Unix())) + conn.RemoteAddr().String()),
+		id:newID(conn),
 	}
 	nc.clientHandler = newClientHandler(nc, base)
 
@@ -103,4 +105,12 @@ func (c *client) Disconnect() {
 func (c *client) send(p *Package) error {
 	_, err := c.conn.Write(p.MarshalBinary())
 	return err
+}
+
+func newID(c net.Conn) string {
+	st := strconv.Itoa(int(time.Now().Unix())) + c.RemoteAddr().String()
+	hasher := md5.New()
+	hasher.Write([]byte(st))
+	hash := hex.EncodeToString(hasher.Sum(nil)[:16])
+	return hash
 }
