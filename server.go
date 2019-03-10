@@ -19,7 +19,7 @@ func NewServer(p string) (*Server, error) {
 	}
 
 	s := &Server{
-		baseHandler: newBaseHandler(),
+		baseHandler: newBaseHandler(newDefaultBroadcast()),
 		ln:ln,
 	}
 

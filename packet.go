@@ -22,8 +22,8 @@ func (pt PackageType) byte() byte {
 }
 
 type Package struct {
-	PT PackageType
-	Payload []byte
+	PT PackageType `json:"t"`
+	Payload []byte `json:"p"`
 }
 
 func (p *Package) MarshalBinary() []byte {

@@ -24,8 +24,6 @@ func NewDial(addr string) (Client, error) {
 		defaultEmitter:&defaultEmitter{c:conn},
 	}
 	d.clientHandler = newClientHandler(d, &baseHandler{events:make(map[string]*caller, 0), name:BASE_HANDLER_DEFAULT_NAME, evMu:sync.Mutex{}})
-	d.sendConnect()
-
 	go d.loop()
 	return d, nil
 }
@@ -40,17 +38,22 @@ func (d *dial) Connection() net.Conn {
 
 func (d *dial) sendConnect() {
 	p := NewPacket(_PACKET_TYPE_CONNECT)
-	d.conn.Write(p.MarshalBinary())
+	_, _ = d.conn.Write(p.MarshalBinary())
 }
 
 func (d *dial) Disconnect() {
-	d.send(&Package{PT:_PACKET_TYPE_DISCONNECT})
-	d.call(DISCONNECTION_NAME, nil)
-	d.conn.Close()
+	_ = d.send(&Package{PT:_PACKET_TYPE_DISCONNECT})
+	_ = d.call(DISCONNECTION_NAME, nil)
+	_ = d.conn.Close()
+}
+
+func (d *dial) Broadcast(event string, msg []byte) error {
+	return nil
 }
 
 func (d *dial) loop() {
 	defer d.Disconnect()
+	d.sendConnect()
 
 	for {
 		msg, err := bufio.NewReader(d.conn).ReadBytes('\n')

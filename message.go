@@ -3,8 +3,8 @@ package socket
 import "encoding/json"
 
 type Message struct {
-	EventName string
-	Data []byte
+	EventName string `json:"e"`
+	Data []byte `json:"d"`
 }
 
 func (m Message) MarshalBinary() ([]byte, error) {

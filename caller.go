@@ -11,7 +11,7 @@ type caller struct {
 	NeedSocket bool
 }
 
-func newCaller(f interface{}) (*caller, error) {
+func NewCaller(f interface{}) (*caller, error) {
 	fv := reflect.ValueOf(f)
 	if fv.Kind() != reflect.Func {
 		return nil, fmt.Errorf("f is not func")

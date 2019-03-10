@@ -20,6 +20,8 @@ type Client interface {
 
 	Emit(event string, data []byte) error
 
+	Broadcast(event string, msg []byte) error
+
 	Disconnect()
 }
 
@@ -37,18 +39,20 @@ func newClient(conn net.Conn, base *baseHandler) (Client, error) {
 		defaultEmitter:&defaultEmitter{c: conn},
 	}
 	nc.clientHandler = newClientHandler(nc, base)
+	err := nc.baseHandler.broadcast.Join(DefaultBroadcastRoomName, nc)
+	if err != nil {
+		return nil, err
+	}
 
 	go nc.loop()
 	return nc, nil
 }
 
 func (c *client) loop() {
-	defer c.Disconnect()
-
-	if err := c.send(& Package{PT:_PACKET_TYPE_CONNECT, Payload:[]byte(c.id)}); err != nil {
+	defer func() {
 		c.Disconnect()
-		return
-	}
+		_ = c.broadcast.Leave(DefaultBroadcastRoomName, c)
+	}()
 
 	for {
 		msg, err := bufio.NewReader(c.conn).ReadBytes('\n')
@@ -63,6 +67,11 @@ func (c *client) loop() {
 
 		switch p.PT {
 		case _PACKET_TYPE_CONNECT:
+			if err := c.send(& Package{PT:_PACKET_TYPE_CONNECT, Payload:[]byte(c.id)}); err != nil {
+				c.Disconnect()
+				return
+			}
+
 			if err := c.call(CONNECTION_NAME, nil); err != nil {
 				return
 			}
@@ -90,9 +99,9 @@ func (c *client) Connection() net.Conn {
 }
 
 func (c *client) Disconnect() {
-	c.send(&Package{PT:_PACKET_TYPE_DISCONNECT})
-	c.call(DISCONNECTION_NAME, nil)
-	c.conn.Close()
+	_ = c.send(&Package{PT:_PACKET_TYPE_DISCONNECT})
+	_ = c.call(DISCONNECTION_NAME, nil)
+	_ = c.conn.Close()
 }
 
 func newID(c net.Conn) string {
