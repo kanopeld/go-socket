@@ -59,5 +59,3 @@ Example usage
     	//stop the server wait & clode tcp connect
     	s.Stop()
 ```
-
-Room will added soon
