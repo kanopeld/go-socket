@@ -1,8 +1,8 @@
 package socket
 
 import (
-	"net"
 	"bufio"
+	"net"
 	"sync"
 )
 
@@ -11,6 +11,8 @@ type dial struct {
 	*defaultEmitter
 	conn net.Conn
 	id string
+	on bool
+	disc bool
 }
 
 func NewDial(addr string) (Client, error) {
@@ -42,6 +44,11 @@ func (d *dial) sendConnect() {
 }
 
 func (d *dial) Disconnect() {
+	d.on = false
+	if d.disc {
+		return
+	}
+	d.disc = true
 	_ = d.send(&Package{PT:_PACKET_TYPE_DISCONNECT})
 	_ = d.call(DISCONNECTION_NAME, nil)
 	_ = d.conn.Close()
@@ -52,18 +59,19 @@ func (d *dial) Broadcast(event string, msg []byte) error {
 }
 
 func (d *dial) loop() {
+	d.on = true
 	defer d.Disconnect()
 	d.sendConnect()
 
-	for {
+	for d.on {
 		msg, err := bufio.NewReader(d.conn).ReadBytes('\n')
 		if err != nil {
-			continue
+			return
 		}
 
 		p, err := DecodePackage(msg)
 		if err != nil {
-			continue
+			return
 		}
 
 		switch p.PT {
@@ -77,7 +85,7 @@ func (d *dial) loop() {
 		case _PACKET_TYPE_EVENT:
 			msg ,err := DecodeMessage(p.Payload)
 			if err != nil {
-				continue
+				return
 			}
 
 			if err := d.call(msg.EventName, msg.Data); err != nil {
