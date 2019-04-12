@@ -19,7 +19,7 @@ func main() {
 	}
 
 	//when new client connecting, server will call "connection" event.
-	err = s.On("connection", func(c socket.Client) {
+	err = s.On(socket.CONNECTION_NAME, func(c socket.Client) {
 		fmt.Printf("connected %s", c.ID())
 
 		err = c.On("test", func(data []byte) {
@@ -48,7 +48,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	err = d.On("connection", func(c socket.Client) {
+	err = d.On(socket.CONNECTION_NAME, func(c socket.Client) {
 		_ = d.On("test", func() {
 			go func() {
 				fmt.Println("dial got test event")
