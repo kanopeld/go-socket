@@ -1,12 +1,12 @@
 package socket
 
 import (
-	"net"
 	"bufio"
-	"strconv"
-	"time"
 	"crypto/md5"
 	"encoding/hex"
+	"net"
+	"strconv"
+	"time"
 )
 
 type Client interface {
@@ -18,7 +18,7 @@ type Client interface {
 
 	Off(event string) bool
 
-	Emit(event string, data []byte) error
+	Emit(event string, arg interface{}) error
 
 	Broadcast(event string, msg []byte) error
 
@@ -29,7 +29,8 @@ type client struct {
 	*clientHandler
 	*defaultEmitter
 	conn net.Conn
-	id string
+	id   string
+	disc bool
 }
 
 func newClient(conn net.Conn, base *baseHandler) (Client, error) {
@@ -54,15 +55,16 @@ func (c *client) loop() {
 		_ = c.broadcast.Leave(DefaultBroadcastRoomName, c)
 	}()
 
+	reader := bufio.NewReader(c.conn)
 	for {
-		msg, err := bufio.NewReader(c.conn).ReadBytes('\n')
+		msg, err := reader.ReadBytes('\n')
 		if err != nil {
-			continue
+			return
 		}
 
 		p, err := DecodePackage(msg)
 		if err != nil {
-			continue
+			return
 		}
 
 		switch p.PT {
@@ -95,6 +97,10 @@ func (c *client) Connection() net.Conn {
 }
 
 func (c *client) Disconnect() {
+	if c.disc {
+		return
+	}
+	c.disc = true
 	_ = c.send(&Package{PT:_PACKET_TYPE_DISCONNECT})
 	_ = c.call(DISCONNECTION_NAME, nil)
 	_ = c.conn.Close()

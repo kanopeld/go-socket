@@ -1,8 +1,3 @@
-## TCP Socket.io-like library
-
-Example usage
-
-``` go
 package main
 
 import (
@@ -56,12 +51,10 @@ func main() {
 		})
 		_ = d.Emit("test", "hello")
 
-
 		_ = d.On(socket.DISCONNECTION_NAME, func() {
 			fmt.Println("Dial disc")
 		})
 	})
-
 
 	//for make sure what dial code finished
 	time.Sleep(5 * time.Second)
@@ -69,6 +62,3 @@ func main() {
 	//stop the server wait & close tcp connect
 	s.Stop()
 }
-```
-
-Room will added soon

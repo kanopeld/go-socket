@@ -10,7 +10,7 @@ func (c *FakeClient) ID() string {
 	return c.Id
 }
 
-func (c *FakeClient) Emit(event string, msg []byte) error {
+func (c *FakeClient) Emit(event string, msg interface{}) error {
 	return nil
 }
 

@@ -1,11 +1,10 @@
 package socket
 
-const (
-	CONNECTION_NAME = "connection"
-	DISCONNECTION_NAME = "disconnection"
-)
-
 func DecodePackage(msg []byte) (Package, error) {
+	if msg[len(msg)-1] == '\n' {
+		msg = msg[:len(msg)-1]
+	}
+
 	p := Package{
 		PT:PackageType(msg[0]),
 		Payload:msg[1:],

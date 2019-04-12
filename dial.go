@@ -11,7 +11,6 @@ type dial struct {
 	*defaultEmitter
 	conn net.Conn
 	id string
-	on bool
 	disc bool
 }
 
@@ -43,7 +42,6 @@ func (d *dial) sendConnect() {
 }
 
 func (d *dial) Disconnect() {
-	d.on = false
 	if d.disc {
 		return
 	}
@@ -58,12 +56,14 @@ func (d *dial) Broadcast(event string, msg []byte) error {
 }
 
 func (d *dial) loop() {
-	d.on = true
-	defer d.Disconnect()
+	defer func() {
+		d.Disconnect()
+	}()
 	d.sendConnect()
 
-	for d.on {
-		msg, err := bufio.NewReader(d.conn).ReadBytes('\n')
+	reader := bufio.NewReader(d.conn)
+	for {
+		msg, err := reader.ReadBytes('\n')
 		if err != nil {
 			return
 		}
