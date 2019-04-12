@@ -78,11 +78,7 @@ func (c *client) loop() {
 		case _PACKET_TYPE_DISCONNECT:
 			return
 		case _PACKET_TYPE_EVENT:
-			msg ,err := DecodeMessage(p.Payload)
-			if err != nil {
-				continue
-			}
-
+			msg := DecodeMessage(p.Payload)
 			if err := c.call(msg.EventName, msg.Data); err != nil {
 				return
 			}

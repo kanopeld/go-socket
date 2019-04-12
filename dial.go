@@ -39,8 +39,7 @@ func (d *dial) Connection() net.Conn {
 }
 
 func (d *dial) sendConnect() {
-	p := NewPacket(_PACKET_TYPE_CONNECT)
-	_, _ = d.conn.Write(p.MarshalBinary())
+	_, _ = d.conn.Write(Package{PT: _PACKET_TYPE_CONNECT}.MarshalBinary())
 }
 
 func (d *dial) Disconnect() {
@@ -83,11 +82,7 @@ func (d *dial) loop() {
 		case _PACKET_TYPE_DISCONNECT:
 			return
 		case _PACKET_TYPE_EVENT:
-			msg ,err := DecodeMessage(p.Payload)
-			if err != nil {
-				return
-			}
-
+			msg := DecodeMessage(p.Payload)
 			if err := d.call(msg.EventName, msg.Data); err != nil {
 				return
 			}

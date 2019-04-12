@@ -22,11 +22,11 @@ func (pt PackageType) byte() byte {
 }
 
 type Package struct {
-	PT PackageType `json:"t"`
-	Payload []byte `json:"p"`
+	PT      PackageType
+	Payload []byte
 }
 
-func (p *Package) MarshalBinary() []byte {
+func (p Package) MarshalBinary() []byte {
 	b := make([]byte, 1)
 	b[0] = p.PT.byte()
 	if len(p.Payload) > 0 {
@@ -35,8 +35,4 @@ func (p *Package) MarshalBinary() []byte {
 	b = append(b, '\n')
 
 	return b
-}
-
-func NewPacket(pt PackageType) Package {
-	return Package{PT:pt}
 }

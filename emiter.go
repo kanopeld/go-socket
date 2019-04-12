@@ -12,9 +12,5 @@ func (de *defaultEmitter) send(p *Package) error {
 }
 
 func (de *defaultEmitter) Emit(event string, data []byte) error {
-	b, err := Message{EventName:event,Data:data}.MarshalBinary()
-	if err != nil {
-		return err
-	}
-	return de.send(&Package{PT:_PACKET_TYPE_EVENT, Payload:b})
+	return de.send(&Package{PT: _PACKET_TYPE_EVENT, Payload: Message{EventName: event, Data: data}.MarshalBinary()})
 }
