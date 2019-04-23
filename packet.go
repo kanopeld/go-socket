@@ -1,24 +1,15 @@
 package socket
 
 const (
-	_PACKET_TYPE_CONNECT PackageType = 0x00
-	_PACKET_TYPE_DISCONNECT PackageType = 0x01
-	_PACKET_TYPE_EVENT PackageType = 0x02
+	_PACKET_TYPE_CONNECT    PackageType = 0x0
+	_PACKET_TYPE_DISCONNECT PackageType = 0x1
+	_PACKET_TYPE_EVENT      PackageType = 0x2
 )
 
 type PackageType byte
 
 func (pt PackageType) byte() byte {
-	switch pt {
-	case _PACKET_TYPE_CONNECT:
-		return 0x00
-	case _PACKET_TYPE_DISCONNECT:
-		return 0x01
-	case _PACKET_TYPE_EVENT:
-		return 0x02
-	}
-
-	return 0x03
+	return byte(pt)
 }
 
 type Package struct {

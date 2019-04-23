@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/ilya-beltiukov/socket"
+	"github.com/kanopeld/socket"
 	"time"
 )
 
 func main() {
 	//create new server
-	s, err := socket.NewServer(":6500")
+	s, err := socket.NewServer(":6500", false)
 	if err != nil {
 		panic(err)
 	}
@@ -37,7 +37,7 @@ func main() {
 	}
 
 	//this method will block next code and wait when program finish or will called Stop() method
-	go s.Start()
+	s.Start()
 
 	d, err := socket.NewDial("localhost:6500")
 	if err != nil {
@@ -57,7 +57,7 @@ func main() {
 	})
 
 	//for make sure what dial code finished
-	time.Sleep(5 * time.Second)
+	time.Sleep(50 * time.Second)
 
 	//stop the server wait & close tcp connect
 	s.Stop()

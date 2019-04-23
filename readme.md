@@ -25,6 +25,8 @@ func main() {
 		err = c.On("test", func(data []byte) {
 			fmt.Println("server got test event")
 			fmt.Printf("Test (%s) message\n", string(data))
+			
+			//Emit can get bytes slice, string or nil only
 			_ = c.Emit("test", nil)
 		})
 

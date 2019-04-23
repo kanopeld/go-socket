@@ -70,7 +70,7 @@ func (h *clientHandler) call(event string, data []byte) error {
 }
 
 func (h *clientHandler) Broadcast(event string, msg []byte) error {
-	return  h.broadcast.Send(h.client, DefaultBroadcastRoomName, event, msg)
+	return h.broadcast.Send(h.client, DefaultBroadcastRoomName, event, msg)
 }
 
 func newClientHandler(c Client, bh *baseHandler) *clientHandler {

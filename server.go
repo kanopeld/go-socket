@@ -12,7 +12,8 @@ type Server struct {
 	r bool
 	sync.Mutex
 }
-func NewServer(p string) (*Server, error) {
+
+func NewServer(p string, autostart bool) (*Server, error) {
 	ln, err := net.Listen("tcp", p)
 	if err != nil {
 		return nil, err
@@ -23,12 +24,15 @@ func NewServer(p string) (*Server, error) {
 		ln:ln,
 	}
 
-	go s.loop()
+	if autostart {
+		s.r = true
+		go s.loop()
+	}
 	return s, nil
 }
 
 func (s *Server) loop() {
-	for {
+	for s.r {
 		conn, err := s.ln.Accept()
 		if err != nil {
 			continue
@@ -46,14 +50,10 @@ func (s *Server) Start() {
 	if s.r {
 		return
 	}
-
 	s.r = true
-	for s.r {
-
-	}
 }
 
 func (s *Server) Stop() {
 	s.r = false
-	s.ln.Close()
+	_ = s.ln.Close()
 }
