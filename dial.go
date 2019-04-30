@@ -37,10 +37,6 @@ func (d *dial) Connection() net.Conn {
 	return d.conn
 }
 
-func (d *dial) sendConnect() {
-	_, _ = d.conn.Write(Package{PT: _PACKET_TYPE_CONNECT}.MarshalBinary())
-}
-
 func (d *dial) Disconnect() {
 	if d.disc {
 		return
@@ -59,7 +55,6 @@ func (d *dial) loop() {
 	defer func() {
 		d.Disconnect()
 	}()
-	d.sendConnect()
 
 	reader := bufio.NewReader(d.conn)
 	for {
@@ -76,6 +71,10 @@ func (d *dial) loop() {
 		switch p.PT {
 		case _PACKET_TYPE_CONNECT:
 			d.id = string(p.Payload)
+			if err = d.send(&Package{PT: _PACKET_TYPE_CONNECT_ACCEPT}); err != nil {
+				return
+			}
+
 			if err := d.call(CONNECTION_NAME, nil); err != nil {
 				return
 			}

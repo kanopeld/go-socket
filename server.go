@@ -38,19 +38,24 @@ func (s *Server) loop() {
 			continue
 		}
 
-		_, err = newClient(conn, s.baseHandler)
+		c, err := newClient(conn, s.baseHandler)
 		if err != nil {
 			log.Printf("Error create new client instance. Error: %s", err.Error())
 		}
+		client, ok := c.(*client)
+		if !ok {
+			continue
+		}
+		client.loop()
 	}
 }
 
 func (s *Server) Start() {
-	go s.loop()
 	if s.r {
 		return
 	}
 	s.r = true
+	go s.loop()
 }
 
 func (s *Server) Stop() {

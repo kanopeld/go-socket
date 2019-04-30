@@ -1,9 +1,10 @@
 package socket
 
 const (
-	_PACKET_TYPE_CONNECT    PackageType = 0x0
-	_PACKET_TYPE_DISCONNECT PackageType = 0x1
-	_PACKET_TYPE_EVENT      PackageType = 0x2
+	_PACKET_TYPE_CONNECT        PackageType = 0x0
+	_PACKET_TYPE_DISCONNECT     PackageType = 0x1
+	_PACKET_TYPE_EVENT          PackageType = 0x2
+	_PACKET_TYPE_CONNECT_ACCEPT PackageType = 0x3
 )
 
 type PackageType byte

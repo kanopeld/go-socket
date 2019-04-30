@@ -15,7 +15,7 @@ func main() {
 
 	//when new client connecting, server will call "connection" event.
 	err = s.On(socket.CONNECTION_NAME, func(c socket.Client) {
-		fmt.Printf("connected %s", c.ID())
+		fmt.Printf("connected %s\n", c.ID())
 
 		err = c.On("test", func(data []byte) {
 			fmt.Println("server got test event")
@@ -57,7 +57,7 @@ func main() {
 	})
 
 	//for make sure what dial code finished
-	time.Sleep(50 * time.Second)
+	time.Sleep(5 * time.Second)
 
 	//stop the server wait & close tcp connect
 	s.Stop()

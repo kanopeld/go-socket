@@ -42,11 +42,15 @@ func newClient(conn net.Conn, base *baseHandler) (Client, error) {
 	nc.clientHandler = newClientHandler(nc, base)
 	err := nc.baseHandler.broadcast.Join(DefaultBroadcastRoomName, nc)
 	if err != nil {
+		_ = base.broadcast.Leave(DefaultBroadcastRoomName, nc)
 		return nil, err
 	}
 
-	go nc.loop()
 	return nc, nil
+}
+
+func (c *client) sendConnect() {
+	_, _ = c.conn.Write(Package{PT: _PACKET_TYPE_CONNECT, Payload: []byte(c.id)}.MarshalBinary())
 }
 
 func (c *client) loop() {
@@ -55,6 +59,7 @@ func (c *client) loop() {
 		_ = c.broadcast.Leave(DefaultBroadcastRoomName, c)
 	}()
 
+	c.sendConnect()
 	reader := bufio.NewReader(c.conn)
 	for {
 		msg, err := reader.ReadBytes('\n')
@@ -68,12 +73,7 @@ func (c *client) loop() {
 		}
 
 		switch p.PT {
-		case _PACKET_TYPE_CONNECT:
-			if err := c.send(& Package{PT:_PACKET_TYPE_CONNECT, Payload:[]byte(c.id)}); err != nil {
-				c.Disconnect()
-				return
-			}
-
+		case _PACKET_TYPE_CONNECT_ACCEPT:
 			if err := c.call(CONNECTION_NAME, nil); err != nil {
 				return
 			}
