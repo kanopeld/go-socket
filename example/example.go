@@ -17,7 +17,7 @@ func main() {
 	err = s.On(socket.CONNECTION_NAME, func(c socket.Client) {
 		fmt.Printf("connected %s\n", c.ID())
 
-		err = c.On("test", func(data []byte) {
+		err = c.On("test", func(c socket.Client, data []byte) {
 			fmt.Println("server got test event")
 			fmt.Printf("Test (%s) message\n", string(data))
 			_ = c.Emit("test", nil)
@@ -26,6 +26,8 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+
+		_ = c.Broadcast("test1", nil)
 
 		_ = c.On(socket.DISCONNECTION_NAME, func() {
 			fmt.Println("Server disc")
@@ -53,6 +55,31 @@ func main() {
 
 		_ = d.On(socket.DISCONNECTION_NAME, func() {
 			fmt.Println("Dial disc")
+		})
+
+		_ = d.On("test1", func() {
+			fmt.Printf("got dial broadcast")
+		})
+	})
+
+	d1, err := socket.NewDial("localhost:6500")
+	if err != nil {
+		panic(err)
+	}
+	err = d1.On(socket.CONNECTION_NAME, func(c socket.Client) {
+		_ = d1.On("test", func() {
+			go func() {
+				fmt.Println("dial got test event")
+			}()
+		})
+		_ = d1.Emit("test", "hello")
+
+		_ = d1.On(socket.DISCONNECTION_NAME, func() {
+			fmt.Println("Dial disc")
+		})
+
+		_ = d1.On("test1", func() {
+			fmt.Printf("got dial 1 broadcast")
 		})
 	})
 

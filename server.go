@@ -2,7 +2,6 @@ package socket
 
 import (
 	"net"
-	"github.com/labstack/gommon/log"
 	"sync"
 )
 
@@ -39,14 +38,10 @@ func (s *Server) loop() {
 		}
 
 		c, err := newClient(conn, s.baseHandler)
-		if err != nil {
-			log.Printf("Error create new client instance. Error: %s", err.Error())
-		}
-		client, ok := c.(*client)
-		if !ok {
+		if err != nil || c == nil {
 			continue
 		}
-		client.loop()
+		c.loop()
 	}
 }
 

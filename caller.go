@@ -1,9 +1,12 @@
 package socket
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 )
+
+var ErrorTooManyArgumnetsForCaller = errors.New("error too many argument for caller func")
 
 type caller struct {
 	Func       reflect.Value
@@ -22,15 +25,38 @@ func NewCaller(f interface{}) (*caller, error) {
 			Func: fv,
 		}, nil
 	}
-	args := make([]reflect.Type, ft.NumIn())
-	for i, n := 0, ft.NumIn(); i < n; i++ {
-		args[i] = ft.In(i)
-	}
+
 	needSocket := false
-	if args[0].Name() == "Client" {
-		args = args[1:]
-		needSocket = true
+	args := make([]reflect.Type, 0)
+	for i, n := 0, ft.NumIn(); i < n; i++ {
+		v := ft.In(i)
+		switch v.Kind() {
+		case reflect.String:
+		case reflect.Slice:
+		case reflect.Interface:
+			if v.Name() != "Client" {
+				return nil, ErrUnsupportedArgType
+			}
+		default:
+			return nil, ErrUnsupportedArgType
+		}
+
+		if v.Name() == "Client" && i == 0 {
+			needSocket = true
+		}
+
+		if needSocket && i >= 2 {
+			return nil, ErrorTooManyArgumnetsForCaller
+		} else if !needSocket && i >= 1 {
+			return nil, ErrorTooManyArgumnetsForCaller
+		}
+		args = append(args, ft.In(i))
 	}
+
+	if needSocket {
+		args = args[1:]
+	}
+
 	return &caller{
 		Func:       fv,
 		Args:       args,
@@ -57,7 +83,11 @@ func (c *caller) Call(so Client, data []byte) []reflect.Value {
 	}
 
 	if len(c.Args) > 0 {
-		a = append(a, reflect.ValueOf(data))
+		if c.Args[len(c.Args)-1].Kind() == reflect.String {
+			a = append(a, reflect.ValueOf(string(data)))
+		} else {
+			a = append(a, reflect.ValueOf(data))
+		}
 	}
 
 	return c.Func.Call(a)

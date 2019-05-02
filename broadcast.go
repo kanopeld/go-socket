@@ -75,7 +75,6 @@ func (b *broadcast) Send(ignore Client, room, event string, msg []byte) error {
 		if id == ignore.ID() {
 			continue
 		}
-
 		_ = c.Emit(event, msg)
 	}
 

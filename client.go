@@ -33,7 +33,7 @@ type client struct {
 	disc bool
 }
 
-func newClient(conn net.Conn, base *baseHandler) (Client, error) {
+func newClient(conn net.Conn, base *baseHandler) (looper, error) {
 	nc := &client{
 		conn: conn,
 		id:newID(conn),
