@@ -8,11 +8,11 @@ import (
 type Server struct {
 	*baseHandler
 	ln net.Listener
-	r bool
 	sync.Mutex
+	closeChan chan struct{}
 }
 
-func NewServer(p string, autostart bool) (*Server, error) {
+func NewServer(p string) (*Server, error) {
 	ln, err := net.Listen("tcp", p)
 	if err != nil {
 		return nil, err
@@ -22,38 +22,37 @@ func NewServer(p string, autostart bool) (*Server, error) {
 		baseHandler: newBaseHandler(newDefaultBroadcast()),
 		ln:ln,
 	}
-
-	if autostart {
-		s.r = true
-		go s.loop()
-	}
 	return s, nil
 }
 
 func (s *Server) loop() {
-	for s.r {
-		conn, err := s.ln.Accept()
-		if err != nil {
-			continue
-		}
+	defer func() {
+		_ = s.ln.Close()
+	}()
 
-		c, err := newClient(conn, s.baseHandler)
-		if err != nil || c == nil {
-			continue
+	for {
+		select {
+		case <-s.closeChan:
+			return
+		default:
+			conn, err := s.ln.Accept()
+			if err != nil {
+				continue
+			}
+
+			c, err := newClient(conn, s.baseHandler)
+			if err != nil || c == nil {
+				continue
+			}
+			go c.loop()
 		}
-		c.loop()
 	}
 }
 
 func (s *Server) Start() {
-	if s.r {
-		return
-	}
-	s.r = true
-	go s.loop()
+	s.loop()
 }
 
 func (s *Server) Stop() {
-	s.r = false
-	_ = s.ln.Close()
+	s.closeChan <- struct{}{}
 }

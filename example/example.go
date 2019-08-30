@@ -8,7 +8,7 @@ import (
 
 func main() {
 	//create new server
-	s, err := socket.NewServer(":6500", false)
+	s, err := socket.NewServer(":6500")
 	if err != nil {
 		panic(err)
 	}
@@ -39,7 +39,7 @@ func main() {
 	}
 
 	//this method will block next code and wait when program finish or will called Stop() method
-	s.Start()
+	go s.Start()
 
 	d, err := socket.NewDial("localhost:6500")
 	if err != nil {
