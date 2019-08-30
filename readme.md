@@ -72,5 +72,3 @@ func main() {
 	s.Stop()
 }
 ```
-
-Room will added soon
