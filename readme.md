@@ -1,5 +1,6 @@
 ## TCP Socket.io-like library
 
+[![](https://img.shields.io/badge/godoc-reference-5272B4.svg)](https://godoc.org/github.com/kanopeld/go-socket)
 [![Go Report Card](https://goreportcard.com/badge/github.com/shilangyu/go-socket)](https://goreportcard.com/report/github.com/shilangyu/go-socket)
 
 Example usage
