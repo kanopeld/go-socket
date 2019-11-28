@@ -14,6 +14,7 @@ type dial struct {
 	disc bool
 }
 
+// NewDial initializes dial struct
 func NewDial(addr string) (Client, error) {
 	conn, err := net.Dial("tcp", addr)
 	if err != nil {

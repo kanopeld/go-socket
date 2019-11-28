@@ -1,5 +1,6 @@
 package socket
 
+// DecodePackage creates a package from a given message
 func DecodePackage(msg []byte) (Package, error) {
 	if msg[len(msg)-1] == '\n' {
 		msg = msg[:len(msg)-1]

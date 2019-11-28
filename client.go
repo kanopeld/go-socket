@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// Client controls the client side of a connection
 type Client interface {
 	ID() string
 

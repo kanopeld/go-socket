@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	// ErrUnsupportedArgType 'received arg type is not support'
 	ErrUnsupportedArgType = errors.New("received arg type is not support")
 )
 

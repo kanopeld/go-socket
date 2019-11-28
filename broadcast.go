@@ -3,6 +3,7 @@ package socket
 import "sync"
 
 const (
+	// DefaultBroadcastRoomName is a default name for a room
 	DefaultBroadcastRoomName = "defaultBroadcast"
 )
 

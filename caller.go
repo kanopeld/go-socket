@@ -6,6 +6,7 @@ import (
 	"reflect"
 )
 
+// ErrorTooManyArgumnetsForCaller 'error too many argument for caller func'
 var ErrorTooManyArgumnetsForCaller = errors.New("error too many argument for caller func")
 
 type caller struct {
