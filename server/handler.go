@@ -1,24 +1,24 @@
-package socket
+package server
 
 import "sync"
 
 const (
-	BASE_HANDLER_DEFAULT_NAME = "default"
+	BaseHandlerDefaultName = "default"
 )
 
 type baseHandler struct {
-	events map[string]*caller
-	name string
-	evMu sync.Mutex
+	events    map[string]*caller
+	name      string
+	evMu      *sync.RWMutex
 	broadcast BroadcastAdaptor
 }
 
 func newBaseHandler(adaptor BroadcastAdaptor) *baseHandler {
 	return &baseHandler{
-		events:make(map[string]*caller, 0),
-		name:BASE_HANDLER_DEFAULT_NAME,
-		evMu:sync.Mutex{},
-		broadcast:adaptor,
+		events:    make(map[string]*caller, 0),
+		name:      BaseHandlerDefaultName,
+		evMu:      &sync.RWMutex{},
+		broadcast: adaptor,
 	}
 }
 
@@ -47,25 +47,21 @@ type clientHandler struct {
 }
 
 func (h *clientHandler) call(event string, data []byte) error {
-	h.evMu.Lock()
+	h.evMu.RLock()
 	c, ok := h.events[event]
-	h.evMu.Unlock()
-
+	h.evMu.RUnlock()
 	if !ok {
 		return nil
 	}
-
 	retV := c.Call(h.client, data)
 	if len(retV) == 0 {
 		return nil
 	}
-
 	var err error
 	if last, ok := retV[len(retV)-1].Interface().(error); ok {
 		err = last
 		return err
 	}
-
 	return nil
 }
 
@@ -75,16 +71,16 @@ func (h *clientHandler) Broadcast(event string, msg []byte) error {
 
 func newClientHandler(c Client, bh *baseHandler) *clientHandler {
 	events := make(map[string]*caller)
-	bh.evMu.Lock()
+	bh.evMu.RLock()
 	for k, v := range bh.events {
 		events[k] = v
 	}
-	bh.evMu.Unlock()
+	bh.evMu.RUnlock()
 	return &clientHandler{
 		baseHandler: &baseHandler{
 			events:    events,
 			evMu:      bh.evMu,
-			broadcast:bh.broadcast,
+			broadcast: bh.broadcast,
 		},
 		client: c,
 	}

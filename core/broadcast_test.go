@@ -1,4 +1,4 @@
-package socket
+package core
 
 import (
 	"github.com/smartystreets/goconvey/convey"
@@ -9,7 +9,7 @@ func TestBroadcast_Join(t *testing.T) {
 	bc := newDefaultBroadcast()
 
 	convey.Convey("testing broadcast join", t, func() {
-		err := bc.Join(DefaultBroadcastRoomName, &FakeClient{Id:"tests"})
+		err := bc.Join(DefaultBroadcastRoomName, &FakeClient{Id: "tests"})
 		convey.So(err, convey.ShouldBeNil)
 		convey.So(bc.Len(DefaultBroadcastRoomName), convey.ShouldEqual, 1)
 	})
@@ -27,7 +27,7 @@ func TestBroadcast_Join(t *testing.T) {
 	})
 
 	convey.Convey("testing broadcast join", t, func() {
-		err := bc.Join("test", &FakeClient{Id:"tests"})
+		err := bc.Join("test", &FakeClient{Id: "tests"})
 		convey.So(err, convey.ShouldBeNil)
 		convey.So(bc.Len("test"), convey.ShouldEqual, 1)
 	})
@@ -49,29 +49,29 @@ func TestBroadcast_Leave(t *testing.T) {
 	bc := newDefaultBroadcast()
 
 	convey.Convey("testing broadcast leave", t, func() {
-		err := bc.Join(DefaultBroadcastRoomName, &FakeClient{Id:"tests"})
+		err := bc.Join(DefaultBroadcastRoomName, &FakeClient{Id: "tests"})
 		convey.So(err, convey.ShouldBeNil)
 		convey.So(bc.Len(DefaultBroadcastRoomName), convey.ShouldEqual, 1)
 
-		err = bc.Leave(DefaultBroadcastRoomName, &FakeClient{Id:"error"})
+		err = bc.Leave(DefaultBroadcastRoomName, &FakeClient{Id: "error"})
 		convey.So(err, convey.ShouldBeNil)
 		convey.So(bc.Len(DefaultBroadcastRoomName), convey.ShouldEqual, 1)
 
-		err = bc.Leave(DefaultBroadcastRoomName, &FakeClient{Id:"tests"})
+		err = bc.Leave(DefaultBroadcastRoomName, &FakeClient{Id: "tests"})
 		convey.So(err, convey.ShouldBeNil)
 		convey.So(bc.Len(DefaultBroadcastRoomName), convey.ShouldEqual, 0)
 	})
 
 	convey.Convey("testing broadcast leave", t, func() {
-		err := bc.Join(DefaultBroadcastRoomName, &FakeClient{Id:"tests"})
+		err := bc.Join(DefaultBroadcastRoomName, &FakeClient{Id: "tests"})
 		convey.So(err, convey.ShouldBeNil)
 		convey.So(bc.Len(DefaultBroadcastRoomName), convey.ShouldEqual, 1)
 
-		err = bc.Leave("test", &FakeClient{Id:"error"})
+		err = bc.Leave("test", &FakeClient{Id: "error"})
 		convey.So(err, convey.ShouldBeNil)
 		convey.So(bc.Len("test"), convey.ShouldEqual, -1)
 
-		err = bc.Leave(DefaultBroadcastRoomName, &FakeClient{Id:"tests"})
+		err = bc.Leave(DefaultBroadcastRoomName, &FakeClient{Id: "tests"})
 		convey.So(err, convey.ShouldBeNil)
 		convey.So(bc.Len(DefaultBroadcastRoomName), convey.ShouldEqual, 0)
 	})

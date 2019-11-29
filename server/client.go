@@ -1,29 +1,11 @@
-package socket
+package server
 
 import (
 	"bufio"
-	"crypto/md5"
-	"encoding/hex"
 	"net"
 	"strconv"
 	"time"
 )
-
-type Client interface {
-	ID() string
-
-	Connection() net.Conn
-
-	On(event string, f interface{}) error
-
-	Off(event string) bool
-
-	Emit(event string, arg interface{}) error
-
-	Broadcast(event string, msg []byte) error
-
-	Disconnect()
-}
 
 type client struct {
 	*clientHandler
@@ -35,9 +17,9 @@ type client struct {
 
 func newClient(conn net.Conn, base *baseHandler) (looper, error) {
 	nc := &client{
-		conn: conn,
-		id:newID(conn),
-		defaultEmitter:&defaultEmitter{c: conn},
+		conn:           conn,
+		id:             newID(conn),
+		defaultEmitter: &defaultEmitter{c: conn},
 	}
 	nc.clientHandler = newClientHandler(nc, base)
 	err := nc.baseHandler.broadcast.Join(DefaultBroadcastRoomName, nc)
@@ -101,15 +83,11 @@ func (c *client) Disconnect() {
 		return
 	}
 	c.disc = true
-	_ = c.send(&Package{PT:_PACKET_TYPE_DISCONNECT})
+	_ = c.send(&Package{PT: _PACKET_TYPE_DISCONNECT})
 	_ = c.call(DISCONNECTION_NAME, nil)
 	_ = c.conn.Close()
 }
 
 func newID(c net.Conn) string {
-	st := strconv.Itoa(int(time.Now().Unix())) + c.RemoteAddr().String()
-	hasher := md5.New()
-	hasher.Write([]byte(st))
-	hash := hex.EncodeToString(hasher.Sum(nil)[:16])
-	return hash
+	return strconv.Itoa(int(time.Now().Unix())) + c.RemoteAddr().String()
 }

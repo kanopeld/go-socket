@@ -1,4 +1,4 @@
-package socket
+package server
 
 const (
 	_PACKET_TYPE_CONNECT        PackageType = 0x0

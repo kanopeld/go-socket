@@ -1,4 +1,4 @@
-package socket
+package server
 
 const (
 	CONNECTION_NAME    = "connection"

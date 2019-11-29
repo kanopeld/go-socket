@@ -1,4 +1,4 @@
-package socket
+package server
 
 func DecodeMessage(data []byte) Message {
 	var msg Message

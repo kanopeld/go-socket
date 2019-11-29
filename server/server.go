@@ -1,4 +1,4 @@
-package socket
+package server
 
 import (
 	"net"
@@ -12,15 +12,15 @@ type Server struct {
 	closeChan chan struct{}
 }
 
-func NewServer(p string) (*Server, error) {
-	ln, err := net.Listen("tcp", p)
+func NewServer(port string) (*Server, error) {
+	ln, err := net.Listen("tcp", port)
 	if err != nil {
 		return nil, err
 	}
 
 	s := &Server{
 		baseHandler: newBaseHandler(newDefaultBroadcast()),
-		ln:ln,
+		ln:          ln,
 	}
 	return s, nil
 }
