@@ -10,10 +10,11 @@ type dial struct {
 	*clientHandler
 	*defaultEmitter
 	conn net.Conn
-	id string
+	id   string
 	disc bool
 }
 
+// NewDial initializes dial struct
 func NewDial(addr string) (Client, error) {
 	conn, err := net.Dial("tcp", addr)
 	if err != nil {
@@ -21,10 +22,10 @@ func NewDial(addr string) (Client, error) {
 	}
 
 	d := &dial{
-		conn:conn,
-		defaultEmitter:&defaultEmitter{c:conn},
+		conn:           conn,
+		defaultEmitter: &defaultEmitter{c: conn},
 	}
-	d.clientHandler = newClientHandler(d, &baseHandler{events:make(map[string]*caller, 0), name:BASE_HANDLER_DEFAULT_NAME, evMu:sync.Mutex{}})
+	d.clientHandler = newClientHandler(d, &baseHandler{events: make(map[string]*caller, 0), name: BASE_HANDLER_DEFAULT_NAME, evMu: sync.Mutex{}})
 	go d.loop()
 	return d, nil
 }
@@ -42,7 +43,7 @@ func (d *dial) Disconnect() {
 		return
 	}
 	d.disc = true
-	_ = d.send(&Package{PT:_PACKET_TYPE_DISCONNECT})
+	_ = d.send(&Package{PT: _PACKET_TYPE_DISCONNECT})
 	_ = d.call(DISCONNECTION_NAME, nil)
 	_ = d.conn.Close()
 }

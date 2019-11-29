@@ -7,18 +7,18 @@ const (
 )
 
 type baseHandler struct {
-	events map[string]*caller
-	name string
-	evMu sync.Mutex
+	events    map[string]*caller
+	name      string
+	evMu      sync.Mutex
 	broadcast BroadcastAdaptor
 }
 
 func newBaseHandler(adaptor BroadcastAdaptor) *baseHandler {
 	return &baseHandler{
-		events:make(map[string]*caller, 0),
-		name:BASE_HANDLER_DEFAULT_NAME,
-		evMu:sync.Mutex{},
-		broadcast:adaptor,
+		events:    make(map[string]*caller, 0),
+		name:      BASE_HANDLER_DEFAULT_NAME,
+		evMu:      sync.Mutex{},
+		broadcast: adaptor,
 	}
 }
 
@@ -84,7 +84,7 @@ func newClientHandler(c Client, bh *baseHandler) *clientHandler {
 		baseHandler: &baseHandler{
 			events:    events,
 			evMu:      bh.evMu,
-			broadcast:bh.broadcast,
+			broadcast: bh.broadcast,
 		},
 		client: c,
 	}

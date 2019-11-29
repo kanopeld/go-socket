@@ -5,6 +5,7 @@ import (
 	"sync"
 )
 
+// Server controls the server side of a connection
 type Server struct {
 	*baseHandler
 	ln net.Listener
@@ -12,6 +13,7 @@ type Server struct {
 	closeChan chan struct{}
 }
 
+// NewServer initializes a server
 func NewServer(p string) (*Server, error) {
 	ln, err := net.Listen("tcp", p)
 	if err != nil {
@@ -20,7 +22,7 @@ func NewServer(p string) (*Server, error) {
 
 	s := &Server{
 		baseHandler: newBaseHandler(newDefaultBroadcast()),
-		ln:ln,
+		ln:          ln,
 	}
 	return s, nil
 }
@@ -49,10 +51,12 @@ func (s *Server) loop() {
 	}
 }
 
+// Start starts the server
 func (s *Server) Start() {
 	s.loop()
 }
 
+// Stop stops the server
 func (s *Server) Stop() {
 	s.closeChan <- struct{}{}
 }

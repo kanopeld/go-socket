@@ -1,8 +1,11 @@
 ## TCP Socket.io-like library
 
+[![](https://img.shields.io/badge/godoc-reference-5272B4.svg)](https://godoc.org/github.com/kanopeld/go-socket)
+[![Go Report Card](https://goreportcard.com/badge/github.com/shilangyu/go-socket)](https://goreportcard.com/report/github.com/shilangyu/go-socket)
+
 Example usage
 
-``` go
+```go
 package main
 
 import (
@@ -25,7 +28,7 @@ func main() {
 		err = c.On("test", func(data []byte) {
 			fmt.Println("server got test event")
 			fmt.Printf("Test (%s) message\n", string(data))
-			
+
 			//Emit can get bytes slice, string or nil only
 			_ = c.Emit("test", nil)
 		})

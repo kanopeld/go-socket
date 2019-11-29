@@ -3,6 +3,7 @@ package socket
 import "sync"
 
 const (
+	// DefaultBroadcastRoomName is a default name for a room
 	DefaultBroadcastRoomName = "defaultBroadcast"
 )
 
@@ -18,12 +19,12 @@ type BroadcastAdaptor interface {
 
 type broadcast struct {
 	rooms map[string]map[string]Client
-	rMu sync.Mutex
+	rMu   sync.Mutex
 }
 
 func newDefaultBroadcast() BroadcastAdaptor {
 	b := &broadcast{
-		rooms:make(map[string]map[string]Client),
+		rooms: make(map[string]map[string]Client),
 	}
 
 	b.rooms[DefaultBroadcastRoomName] = make(map[string]Client)

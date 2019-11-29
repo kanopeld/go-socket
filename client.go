@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// Client controls the client side of a connection
 type Client interface {
 	ID() string
 
@@ -35,9 +36,9 @@ type client struct {
 
 func newClient(conn net.Conn, base *baseHandler) (looper, error) {
 	nc := &client{
-		conn: conn,
-		id:newID(conn),
-		defaultEmitter:&defaultEmitter{c: conn},
+		conn:           conn,
+		id:             newID(conn),
+		defaultEmitter: &defaultEmitter{c: conn},
 	}
 	nc.clientHandler = newClientHandler(nc, base)
 	err := nc.baseHandler.broadcast.Join(DefaultBroadcastRoomName, nc)
@@ -101,7 +102,7 @@ func (c *client) Disconnect() {
 		return
 	}
 	c.disc = true
-	_ = c.send(&Package{PT:_PACKET_TYPE_DISCONNECT})
+	_ = c.send(&Package{PT: _PACKET_TYPE_DISCONNECT})
 	_ = c.call(DISCONNECTION_NAME, nil)
 	_ = c.conn.Close()
 }
