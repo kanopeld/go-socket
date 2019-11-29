@@ -1,7 +1,13 @@
 package core
 
 import (
+	"errors"
+	"fmt"
 	"sync"
+)
+
+var (
+	ErrClientAlreadyExistInRoom error
 )
 
 const (
@@ -12,7 +18,7 @@ type BroadcastAdaptor interface {
 	Join(room string, c Client) error
 	Leave(room string, c Client) error
 	Send(ignore []Client, room, event string, msg interface{}) error
-	Len(room string) uint
+	Len(room string) int
 }
 
 type rooms map[string]Room
@@ -37,9 +43,14 @@ func (b *broadcast) Join(room string, c Client) error {
 	if !ok {
 		r = getRoom()
 		b.Lock()
-		b.rooms[room] = r.SetClient(c)
+		b.rooms[room] = r
 		b.Unlock()
 	}
+	if r.ClientExist(c) {
+		ErrClientAlreadyExistInRoom = errors.New(fmt.Sprintf("client id:(%s) already exist in room %s", c.ID(), room))
+		return ErrClientAlreadyExistInRoom
+	}
+	r.SetClient(c)
 	return nil
 }
 
@@ -72,7 +83,7 @@ func (b *broadcast) Send(ignore []Client, room, event string, msg interface{}) e
 	return r.Send(ignore, event, msg)
 }
 
-func (b *broadcast) Len(room string) uint {
+func (b *broadcast) Len(room string) int {
 	b.Lock()
 	r, ok := b.rooms[room]
 	b.Unlock()

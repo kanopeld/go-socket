@@ -13,14 +13,15 @@ var (
 type Room interface {
 	SetClient(c Client) Room
 	RemoveClient(client Client) error
-	Len() uint
+	Len() int
 	Send(ignore []Client, event string, msg interface{}) error
+	ClientExist(c Client) bool
 }
 
 type clients map[string]Client
 
 type room struct {
-	len uint
+	len int
 	clients
 	sync.RWMutex
 }
@@ -41,10 +42,10 @@ func (r *room) SetClient(c Client) Room {
 
 func (r *room) RemoveClient(client Client) error {
 	r.RLock()
-	var c, ok = r.clients[client.ID()]
+	var _, ok = r.clients[client.ID()]
 	r.RUnlock()
 	if !ok {
-		ErrClientInRoomNotExist = errors.New(fmt.Sprintf("client with id (%s) in room not exist", c.ID()))
+		ErrClientInRoomNotExist = errors.New(fmt.Sprintf("client with id (%s) in room not exist", client.ID()))
 		return ErrClientInRoomNotExist
 	}
 	r.Lock()
@@ -54,7 +55,7 @@ func (r *room) RemoveClient(client Client) error {
 	return nil
 }
 
-func (r *room) Len() uint {
+func (r *room) Len() int {
 	r.RLock()
 	defer r.RUnlock()
 	return r.len
@@ -75,4 +76,11 @@ main:
 	}
 	r.Unlock()
 	return nil
+}
+
+func (r *room) ClientExist(c Client) bool {
+	r.RLock()
+	var _, ok = r.clients[c.ID()]
+	r.RUnlock()
+	return ok
 }
