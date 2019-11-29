@@ -1,4 +1,4 @@
-package server
+package core
 
 import (
 	"errors"
@@ -9,6 +9,14 @@ import (
 var (
 	ErrUnsupportedArgType = errors.New("received arg type is not support")
 )
+
+type Emitter interface {
+	Emit(event string, arg interface{}) error
+}
+
+func GetEmitter(c net.Conn) Emitter {
+	return &defaultEmitter{c: c}
+}
 
 type defaultEmitter struct {
 	c net.Conn
@@ -36,5 +44,5 @@ func (de *defaultEmitter) Emit(event string, arg interface{}) error {
 			return ErrUnsupportedArgType
 		}
 	}
-	return de.send(&Package{PT: _PACKET_TYPE_EVENT, Payload: Message{EventName: event, Data: data}.MarshalBinary()})
+	return de.send(&Package{PT: PackTypeEvent, Payload: Message{EventName: event, Data: data}.MarshalBinary()})
 }

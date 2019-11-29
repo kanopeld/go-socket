@@ -11,14 +11,14 @@ var (
 )
 
 type Room interface {
-	SetClient(c Client) error
-	RemoveClient(client Client) error
+	SetClient(c IdentifiableEmitter) error
+	RemoveClient(client IdentifiableEmitter) error
 	Len() int
-	Send(ignore []Client, event string, msg interface{}) error
-	ClientExist(c Client) bool
+	Send(ignore IdentifiableEmitter, event string, msg interface{}) error
+	ClientExist(c IdentifiableEmitter) bool
 }
 
-type clients map[string]Client
+type clients map[string]IdentifiableEmitter
 
 type room struct {
 	len int
@@ -26,13 +26,13 @@ type room struct {
 	sync.RWMutex
 }
 
-func getRoom() *room {
+func getRoom() Room {
 	return &room{
 		clients: make(clients, 0),
 	}
 }
 
-func (r *room) SetClient(c Client) error {
+func (r *room) SetClient(c IdentifiableEmitter) error {
 	if r.ClientExist(c) {
 		return ErrClientInRoomAlreadyExist
 	}
@@ -43,7 +43,7 @@ func (r *room) SetClient(c Client) error {
 	return nil
 }
 
-func (r *room) RemoveClient(client Client) error {
+func (r *room) RemoveClient(client IdentifiableEmitter) error {
 	r.RLock()
 	var _, ok = r.clients[client.ID()]
 	r.RUnlock()
@@ -63,16 +63,12 @@ func (r *room) Len() int {
 	return r.len
 }
 
-func (r *room) Send(ignore []Client, event string, msg interface{}) error {
+func (r *room) Send(ignore IdentifiableEmitter, event string, msg interface{}) error {
 	r.Lock()
 main:
 	for _, c := range r.clients {
-		if ignore != nil {
-			for _, ic := range ignore {
-				if ic.ID() == c.ID() {
-					continue main
-				}
-			}
+		if ignore != nil && ignore.ID() == c.ID() {
+			continue main
 		}
 		_ = c.Emit(event, msg)
 	}
@@ -80,7 +76,7 @@ main:
 	return nil
 }
 
-func (r *room) ClientExist(c Client) bool {
+func (r *room) ClientExist(c IdentifiableEmitter) bool {
 	r.RLock()
 	var _, ok = r.clients[c.ID()]
 	r.RUnlock()

@@ -1,4 +1,4 @@
-package server
+package core
 
 func DecodeMessage(data []byte) Message {
 	var msg Message
@@ -7,25 +7,21 @@ func DecodeMessage(data []byte) Message {
 	var end = false
 	var endAt = 0
 	for p, char := range data {
-		var ch = string(char)
-		if ch == "[" {
+		if char == CharStartEventName {
 			start = true
 			continue
-		} else if ch == "]" {
+		} else if char == CharEndEventName {
 			start = false
 			end = true
 		}
-
 		if start {
-			name += ch
+			name += string(char)
 		}
-
 		if end {
 			endAt = p
 			break
 		}
 	}
-
 	msg.EventName = name
 	msg.Data = data[endAt+1:]
 	return msg

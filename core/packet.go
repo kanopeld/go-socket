@@ -1,10 +1,10 @@
-package server
+package core
 
 const (
-	_PACKET_TYPE_CONNECT        PackageType = 0x0
-	_PACKET_TYPE_DISCONNECT     PackageType = 0x1
-	_PACKET_TYPE_EVENT          PackageType = 0x2
-	_PACKET_TYPE_CONNECT_ACCEPT PackageType = 0x3
+	PackTypeConnect       PackageType = 0x0
+	PackTypeDisconnect    PackageType = 0x1
+	PackTypeEvent         PackageType = 0x2
+	PeckTypeConnectAccept PackageType = 0x3
 )
 
 type PackageType byte
@@ -25,6 +25,5 @@ func (p Package) MarshalBinary() []byte {
 		b = append(b, p.Payload...)
 	}
 	b = append(b, '\n')
-
 	return b
 }

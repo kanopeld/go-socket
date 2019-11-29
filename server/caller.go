@@ -3,29 +3,32 @@ package server
 import (
 	"errors"
 	"fmt"
+	"github.com/kanopeld/go-socket/core"
 	"reflect"
 )
 
-var ErrorTooManyArgumnetsForCaller = errors.New("error too many argument for caller func")
+var (
+	ErrUnsupportedArgType   = errors.New("received arg type is not support")
+	ErrTooManyArgsForCaller = errors.New("error too many argument for caller func")
+)
 
-type caller struct {
+type serverCaller struct {
 	Func       reflect.Value
 	Args       []reflect.Type
 	NeedSocket bool
 }
 
-func NewCaller(f interface{}) (*caller, error) {
+func NewCaller(f interface{}) (core.Caller, error) {
 	fv := reflect.ValueOf(f)
 	if fv.Kind() != reflect.Func {
 		return nil, fmt.Errorf("f is not func")
 	}
 	ft := fv.Type()
 	if ft.NumIn() == 0 {
-		return &caller{
+		return &serverCaller{
 			Func: fv,
 		}, nil
 	}
-
 	needSocket := false
 	args := make([]reflect.Type, 0)
 	for i, n := 0, ft.NumIn(); i < n; i++ {
@@ -40,31 +43,27 @@ func NewCaller(f interface{}) (*caller, error) {
 		default:
 			return nil, ErrUnsupportedArgType
 		}
-
 		if v.Name() == "Client" && i == 0 {
 			needSocket = true
 		}
-
 		if needSocket && i >= 2 {
-			return nil, ErrorTooManyArgumnetsForCaller
+			return nil, ErrTooManyArgsForCaller
 		} else if !needSocket && i >= 1 {
-			return nil, ErrorTooManyArgumnetsForCaller
+			return nil, ErrTooManyArgsForCaller
 		}
 		args = append(args, ft.In(i))
 	}
-
 	if needSocket {
 		args = args[1:]
 	}
-
-	return &caller{
+	return &serverCaller{
 		Func:       fv,
 		Args:       args,
 		NeedSocket: needSocket,
 	}, nil
 }
 
-func (c *caller) GetArgs() []interface{} {
+func (c *serverCaller) GetArgs() []interface{} {
 	ret := make([]interface{}, len(c.Args))
 	for i, argT := range c.Args {
 		if argT.Kind() == reflect.Ptr {
@@ -76,12 +75,11 @@ func (c *caller) GetArgs() []interface{} {
 	return ret
 }
 
-func (c *caller) Call(so Client, data []byte) []reflect.Value {
+func (c *serverCaller) Call(so core.Client, data []byte) []reflect.Value {
 	a := make([]reflect.Value, 0)
 	if c.NeedSocket {
 		a = append(a, reflect.ValueOf(so))
 	}
-
 	if len(c.Args) > 0 {
 		if c.Args[len(c.Args)-1].Kind() == reflect.String {
 			a = append(a, reflect.ValueOf(string(data)))
@@ -89,6 +87,5 @@ func (c *caller) Call(so Client, data []byte) []reflect.Value {
 			a = append(a, reflect.ValueOf(data))
 		}
 	}
-
 	return c.Func.Call(a)
 }

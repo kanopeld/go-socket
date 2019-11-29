@@ -8,10 +8,14 @@ const (
 	DefaultBroadcastRoomName = "defaultBroadcast"
 )
 
+type Broadcaster interface {
+	Broadcast(event string, arg interface{}) error
+}
+
 type BroadcastAdaptor interface {
-	Join(room string, c Client) error
-	Leave(room string, c Client) error
-	Send(ignore []Client, room, event string, msg interface{}) error
+	Join(room string, c IdentifiableEmitter) error
+	Leave(room string, c IdentifiableEmitter) error
+	Send(ignore IdentifiableEmitter, room, event string, msg interface{}) error
 	Len(room string) int
 }
 
@@ -22,7 +26,7 @@ type broadcast struct {
 	sync.RWMutex
 }
 
-func newDefaultBroadcast() BroadcastAdaptor {
+func NewDefaultBroadcast() BroadcastAdaptor {
 	b := &broadcast{
 		rooms: make(rooms, 0),
 	}
@@ -30,7 +34,7 @@ func newDefaultBroadcast() BroadcastAdaptor {
 	return b
 }
 
-func (b *broadcast) Join(room string, c Client) error {
+func (b *broadcast) Join(room string, c IdentifiableEmitter) error {
 	b.RLock()
 	r, ok := b.rooms[room]
 	b.RUnlock()
@@ -46,7 +50,7 @@ func (b *broadcast) Join(room string, c Client) error {
 	return r.SetClient(c)
 }
 
-func (b *broadcast) Leave(room string, c Client) error {
+func (b *broadcast) Leave(room string, c IdentifiableEmitter) error {
 	b.RLock()
 	var r, ok = b.rooms[room]
 	b.RUnlock()
@@ -65,7 +69,7 @@ func (b *broadcast) Leave(room string, c Client) error {
 	return nil
 }
 
-func (b *broadcast) Send(ignore []Client, room, event string, msg interface{}) error {
+func (b *broadcast) Send(ignore IdentifiableEmitter, room, event string, msg interface{}) error {
 	b.Lock()
 	r, ok := b.rooms[room]
 	b.Unlock()

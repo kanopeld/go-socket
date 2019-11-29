@@ -2,30 +2,54 @@ package core
 
 import "net"
 
-type ServerClient interface {
+type IDer interface {
 	ID() string
+}
+
+type Connectioner interface {
 	Connection() net.Conn
+}
+
+type Handler interface {
 	On(event string, f interface{}) error
 	Off(event string) bool
-	Emit(event string, arg interface{}) error
-	Broadcast(event string, arg interface{}) error
+}
+
+type HandlerSharer interface {
+	GetEvents() Events
+	GetBroadcast() BroadcastAdaptor
+}
+
+type Disconnecter interface {
 	Disconnect()
+}
+
+type IdentifiableEmitter interface {
+	IDer
+	Emitter
+}
+
+type ServerClient interface {
+	Emitter
+	IDer
+	Connectioner
+	Handler
+	Broadcaster
+	Disconnecter
 }
 
 type Client interface {
-	ID() string
-	Connection() net.Conn
-	On(event string, f interface{}) error
-	Off(event string) bool
-	Emit(event string, arg interface{}) error
-	Disconnect()
+	Emitter
+	IDer
+	Connectioner
+	Handler
+	Disconnecter
 }
 
 type DialClient interface {
-	ID() string
-	Connection() net.Conn
-	On(event string, f interface{}) error
-	Off(event string) bool
-	Emit(event string, arg interface{}) error
-	Disconnect()
+	Emitter
+	IDer
+	Connectioner
+	Handler
+	Disconnecter
 }

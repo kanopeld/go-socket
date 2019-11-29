@@ -2,6 +2,7 @@ package server
 
 import (
 	"bufio"
+	"github.com/kanopeld/go-socket/core"
 	"net"
 	"strconv"
 	"time"
@@ -9,25 +10,24 @@ import (
 
 type client struct {
 	*clientHandler
-	*defaultEmitter
+	core.Emitter
 	conn net.Conn
 	id   string
 	disc bool
 }
 
-func newClient(conn net.Conn, base *baseHandler) (looper, error) {
+func newClient(conn net.Conn, base core.HandlerSharer) (looper, error) {
 	nc := &client{
-		conn:           conn,
-		id:             newID(conn),
-		defaultEmitter: &defaultEmitter{c: conn},
+		conn:    conn,
+		id:      newID(conn),
+		Emitter: core.GetEmitter(conn),
 	}
 	nc.clientHandler = newClientHandler(nc, base)
-	err := nc.baseHandler.broadcast.Join(DefaultBroadcastRoomName, nc)
+	err := nc.Join(core.DefaultBroadcastRoomName, nc)
 	if err != nil {
-		_ = base.broadcast.Leave(DefaultBroadcastRoomName, nc)
+		_ = nc.Leave(core.DefaultBroadcastRoomName, nc)
 		return nil, err
 	}
-
 	return nc, nil
 }
 
@@ -38,7 +38,7 @@ func (c *client) sendConnect() {
 func (c *client) loop() {
 	defer func() {
 		c.Disconnect()
-		_ = c.broadcast.Leave(DefaultBroadcastRoomName, c)
+		_ = c.broadcast.Leave(core.DefaultBroadcastRoomName, c)
 	}()
 
 	c.sendConnect()

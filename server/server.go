@@ -1,12 +1,13 @@
 package server
 
 import (
+	"github.com/kanopeld/go-socket/core"
 	"net"
 	"sync"
 )
 
 type Server struct {
-	*baseHandler
+	*core.BaseHandler
 	ln net.Listener
 	sync.Mutex
 	closeChan chan struct{}
@@ -17,9 +18,8 @@ func NewServer(port string) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	s := &Server{
-		baseHandler: newBaseHandler(newDefaultBroadcast()),
+		BaseHandler: core.NewHandler(core.NewDefaultBroadcast(), NewCaller),
 		ln:          ln,
 	}
 	return s, nil
@@ -29,7 +29,6 @@ func (s *Server) loop() {
 	defer func() {
 		_ = s.ln.Close()
 	}()
-
 	for {
 		select {
 		case <-s.closeChan:
@@ -39,8 +38,7 @@ func (s *Server) loop() {
 			if err != nil {
 				continue
 			}
-
-			c, err := newClient(conn, s.baseHandler)
+			c, err := newClient(conn, s.BaseHandler)
 			if err != nil || c == nil {
 				continue
 			}

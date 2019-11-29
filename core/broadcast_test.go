@@ -6,7 +6,7 @@ import (
 )
 
 func TestBroadcast_Join(t *testing.T) {
-	bc := newDefaultBroadcast()
+	bc := NewDefaultBroadcast()
 
 	convey.Convey("testing broadcast join", t, func() {
 		err := bc.Join(DefaultBroadcastRoomName, &FakeServerClient{Id: "tests"})
@@ -29,7 +29,7 @@ func TestBroadcast_Join(t *testing.T) {
 }
 
 func TestBroadcast_Leave(t *testing.T) {
-	bc := newDefaultBroadcast()
+	bc := NewDefaultBroadcast()
 
 	convey.Convey("testing broadcast leave", t, func() {
 		err := bc.Join(DefaultBroadcastRoomName, &FakeServerClient{Id: "tests"})
