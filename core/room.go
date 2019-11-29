@@ -2,16 +2,16 @@ package core
 
 import (
 	"errors"
-	"fmt"
 	"sync"
 )
 
 var (
-	ErrClientInRoomNotExist error
+	ErrClientInRoomNotExist     = errors.New("client in room not exist")
+	ErrClientInRoomAlreadyExist = errors.New("client not exist in room")
 )
 
 type Room interface {
-	SetClient(c Client) Room
+	SetClient(c Client) error
 	RemoveClient(client Client) error
 	Len() int
 	Send(ignore []Client, event string, msg interface{}) error
@@ -32,12 +32,15 @@ func getRoom() *room {
 	}
 }
 
-func (r *room) SetClient(c Client) Room {
+func (r *room) SetClient(c Client) error {
+	if r.ClientExist(c) {
+		return ErrClientInRoomAlreadyExist
+	}
 	r.Lock()
 	r.clients[c.ID()] = c
 	r.len++
 	r.Unlock()
-	return r
+	return nil
 }
 
 func (r *room) RemoveClient(client Client) error {
@@ -45,7 +48,6 @@ func (r *room) RemoveClient(client Client) error {
 	var _, ok = r.clients[client.ID()]
 	r.RUnlock()
 	if !ok {
-		ErrClientInRoomNotExist = errors.New(fmt.Sprintf("client with id (%s) in room not exist", client.ID()))
 		return ErrClientInRoomNotExist
 	}
 	r.Lock()

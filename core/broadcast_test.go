@@ -16,7 +16,7 @@ func TestBroadcast_Join(t *testing.T) {
 
 	convey.Convey("testing broadcast join, duplicate client id", t, func() {
 		err := bc.Join(DefaultBroadcastRoomName, &FakeServerClient{"tests"})
-		convey.So(err, convey.ShouldEqual, ErrClientAlreadyExistInRoom)
+		convey.So(err, convey.ShouldEqual, ErrClientInRoomAlreadyExist)
 		convey.So(bc.Len(DefaultBroadcastRoomName), convey.ShouldEqual, 1)
 	})
 

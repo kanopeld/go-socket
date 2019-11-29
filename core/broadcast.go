@@ -1,13 +1,7 @@
 package core
 
 import (
-	"errors"
-	"fmt"
 	"sync"
-)
-
-var (
-	ErrClientAlreadyExistInRoom error
 )
 
 const (
@@ -47,11 +41,9 @@ func (b *broadcast) Join(room string, c Client) error {
 		b.Unlock()
 	}
 	if r.ClientExist(c) {
-		ErrClientAlreadyExistInRoom = errors.New(fmt.Sprintf("client id:(%s) already exist in room %s", c.ID(), room))
-		return ErrClientAlreadyExistInRoom
+		return ErrClientInRoomAlreadyExist
 	}
-	r.SetClient(c)
-	return nil
+	return r.SetClient(c)
 }
 
 func (b *broadcast) Leave(room string, c Client) error {
