@@ -9,19 +9,20 @@ type BaseHandler struct {
 	Events
 	*sync.RWMutex
 	BroadcastAdaptor
-	callerMaker CallerMaker
+	CallerMaker
 }
 
 func NewHandler(adaptor BroadcastAdaptor, maker CallerMaker) *BaseHandler {
 	return &BaseHandler{
 		Events:           make(Events),
 		BroadcastAdaptor: adaptor,
-		callerMaker:      maker,
+		CallerMaker:      maker,
+		RWMutex:          &sync.RWMutex{},
 	}
 }
 
 func (h *BaseHandler) On(event string, f interface{}) error {
-	c, err := h.callerMaker(f)
+	c, err := h.CallerMaker(f)
 	if err != nil {
 		return err
 	}

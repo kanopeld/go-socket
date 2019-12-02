@@ -4,4 +4,6 @@ import "reflect"
 
 type Caller interface {
 	Call(so Client, data []byte) []reflect.Value
+	GetArgs() []interface{}
+	Socket() bool
 }

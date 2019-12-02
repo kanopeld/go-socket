@@ -2,11 +2,12 @@ package server
 
 import (
 	"github.com/kanopeld/go-socket/core"
+	"sync"
 )
 
 type clientHandler struct {
 	*core.BaseHandler
-	client core.ServerClient
+	client core.SClient
 }
 
 func (h *clientHandler) call(event string, data []byte) error {
@@ -32,11 +33,13 @@ func (h *clientHandler) Broadcast(event string, msg interface{}) error {
 	return h.BroadcastAdaptor.Send(h.client, core.DefaultBroadcastRoomName, event, msg)
 }
 
-func newClientHandler(c core.ServerClient, bh core.HandlerSharer) *clientHandler {
+func newClientHandler(c core.SClient, bh core.HandlerSharer) *clientHandler {
 	return &clientHandler{
 		BaseHandler: &core.BaseHandler{
 			Events:           bh.GetEvents(),
 			BroadcastAdaptor: bh.GetBroadcast(),
+			RWMutex:          &sync.RWMutex{},
+			CallerMaker:      NewCaller,
 		},
 		client: c,
 	}

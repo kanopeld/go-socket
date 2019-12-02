@@ -29,24 +29,16 @@ type IdentifiableEmitter interface {
 	Emitter
 }
 
-type ServerClient interface {
-	Emitter
-	IDer
-	Connectioner
-	Handler
+type SClient interface {
+	Client
 	Broadcaster
-	Disconnecter
+}
+
+type DClient interface {
+	Client
 }
 
 type Client interface {
-	Emitter
-	IDer
-	Connectioner
-	Handler
-	Disconnecter
-}
-
-type DialClient interface {
 	Emitter
 	IDer
 	Connectioner

@@ -1,4 +1,4 @@
-package server
+package dial
 
 import (
 	"errors"
@@ -18,7 +18,8 @@ type serverCaller struct {
 	NeedSocket bool
 }
 
-func NewCaller(f interface{}) (core.Caller, error) {
+func NewDialCaller(f interface{}) (core.Caller, error) {
+	fmt.Print(f)
 	fv := reflect.ValueOf(f)
 	if fv.Kind() != reflect.Func {
 		return nil, fmt.Errorf("f is not func")
@@ -37,13 +38,13 @@ func NewCaller(f interface{}) (core.Caller, error) {
 		case reflect.String:
 		case reflect.Slice:
 		case reflect.Interface:
-			if v.Name() != "SClient" {
+			if v.Name() != "DClient" {
 				return nil, ErrUnsupportedArgType
 			}
 		default:
 			return nil, ErrUnsupportedArgType
 		}
-		if v.Name() == "SClient" && i == 0 {
+		if v.Name() == "DClient" && i == 0 {
 			needSocket = true
 		}
 		if needSocket && i >= 2 {

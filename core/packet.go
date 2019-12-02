@@ -4,7 +4,7 @@ const (
 	PackTypeConnect       PackageType = 0x0
 	PackTypeDisconnect    PackageType = 0x1
 	PackTypeEvent         PackageType = 0x2
-	PeckTypeConnectAccept PackageType = 0x3
+	PackTypeConnectAccept PackageType = 0x3
 )
 
 type PackageType byte

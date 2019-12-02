@@ -42,7 +42,7 @@ func (s *Server) loop() {
 			if err != nil || c == nil {
 				continue
 			}
-			go c.loop()
+			go c.Loop()
 		}
 	}
 }

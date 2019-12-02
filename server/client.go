@@ -16,7 +16,7 @@ type client struct {
 	disc bool
 }
 
-func newClient(conn net.Conn, base core.HandlerSharer) (looper, error) {
+func newClient(conn net.Conn, base core.HandlerSharer) (core.Looper, error) {
 	nc := &client{
 		conn:    conn,
 		id:      newID(conn),
@@ -32,13 +32,13 @@ func newClient(conn net.Conn, base core.HandlerSharer) (looper, error) {
 }
 
 func (c *client) sendConnect() {
-	_, _ = c.conn.Write(Package{PT: _PACKET_TYPE_CONNECT, Payload: []byte(c.id)}.MarshalBinary())
+	_, _ = c.conn.Write(core.Package{PT: core.PackTypeConnect, Payload: []byte(c.id)}.MarshalBinary())
 }
 
-func (c *client) loop() {
+func (c *client) Loop() {
 	defer func() {
 		c.Disconnect()
-		_ = c.broadcast.Leave(core.DefaultBroadcastRoomName, c)
+		_ = c.Leave(core.DefaultBroadcastRoomName, c)
 	}()
 
 	c.sendConnect()
@@ -49,20 +49,20 @@ func (c *client) loop() {
 			return
 		}
 
-		p, err := DecodePackage(msg)
+		p, err := core.DecodePackage(msg)
 		if err != nil {
 			return
 		}
 
 		switch p.PT {
-		case _PACKET_TYPE_CONNECT_ACCEPT:
+		case core.PackTypeConnectAccept:
 			if err := c.call(CONNECTION_NAME, nil); err != nil {
 				return
 			}
-		case _PACKET_TYPE_DISCONNECT:
+		case core.PackTypeDisconnect:
 			return
-		case _PACKET_TYPE_EVENT:
-			msg := DecodeMessage(p.Payload)
+		case core.PackTypeEvent:
+			msg := core.DecodeMessage(p.Payload)
 			if err := c.call(msg.EventName, msg.Data); err != nil {
 				return
 			}
@@ -83,7 +83,7 @@ func (c *client) Disconnect() {
 		return
 	}
 	c.disc = true
-	_ = c.send(&Package{PT: _PACKET_TYPE_DISCONNECT})
+	_ = c.Send(&core.Package{PT: core.PackTypeDisconnect})
 	_ = c.call(DISCONNECTION_NAME, nil)
 	_ = c.conn.Close()
 }

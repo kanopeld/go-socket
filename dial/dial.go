@@ -2,29 +2,29 @@ package dial
 
 import (
 	"bufio"
+	"github.com/kanopeld/go-socket/core"
 	"net"
-	"sync"
 )
 
 type dial struct {
 	*clientHandler
-	*defaultEmitter
+	core.Emitter
 	conn net.Conn
 	id   string
 	disc bool
 }
 
-func NewDial(addr string) (Client, error) {
+func NewDial(addr string) (core.DClient, error) {
 	conn, err := net.Dial("tcp", addr)
 	if err != nil {
 		return nil, err
 	}
 
 	d := &dial{
-		conn:           conn,
-		defaultEmitter: &defaultEmitter{c: conn},
+		conn:    conn,
+		Emitter: core.GetEmitter(conn),
 	}
-	d.clientHandler = newClientHandler(d, &baseHandler{events: make(map[string]*caller, 0), name: BASE_HANDLER_DEFAULT_NAME, evMu: sync.Mutex{}})
+	d.clientHandler = newClientHandler(d)
 	go d.loop()
 	return d, nil
 }
@@ -42,13 +42,9 @@ func (d *dial) Disconnect() {
 		return
 	}
 	d.disc = true
-	_ = d.send(&Package{PT: _PACKET_TYPE_DISCONNECT})
-	_ = d.call(DISCONNECTION_NAME, nil)
+	_ = d.Send(&core.Package{PT: core.PackTypeDisconnect})
+	_ = d.call("disconnection", nil)
 	_ = d.conn.Close()
-}
-
-func (d *dial) Broadcast(event string, msg []byte) error {
-	return nil
 }
 
 func (d *dial) loop() {
@@ -63,25 +59,25 @@ func (d *dial) loop() {
 			return
 		}
 
-		p, err := DecodePackage(msg)
+		p, err := core.DecodePackage(msg)
 		if err != nil {
 			return
 		}
 
 		switch p.PT {
-		case _PACKET_TYPE_CONNECT:
+		case core.PackTypeConnect:
 			d.id = string(p.Payload)
-			if err = d.send(&Package{PT: _PACKET_TYPE_CONNECT_ACCEPT}); err != nil {
+			if err = d.Send(&core.Package{PT: core.PackTypeConnectAccept}); err != nil {
 				return
 			}
 
-			if err := d.call(CONNECTION_NAME, nil); err != nil {
+			if err := d.call("connection", nil); err != nil {
 				return
 			}
-		case _PACKET_TYPE_DISCONNECT:
+		case core.PackTypeDisconnect:
 			return
-		case _PACKET_TYPE_EVENT:
-			msg := DecodeMessage(p.Payload)
+		case core.PackTypeEvent:
+			msg := core.DecodeMessage(p.Payload)
 			if err := d.call(msg.EventName, msg.Data); err != nil {
 				return
 			}

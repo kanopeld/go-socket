@@ -1,7 +1,12 @@
 package core
 
 import (
+	"errors"
 	"sync"
+)
+
+var (
+	ErrRoomNotExist = errors.New("room not exist")
 )
 
 const (
@@ -55,7 +60,7 @@ func (b *broadcast) Leave(room string, c IdentifiableEmitter) error {
 	var r, ok = b.rooms[room]
 	b.RUnlock()
 	if !ok {
-		return nil
+		return ErrRoomNotExist
 	}
 	var err = r.RemoveClient(c)
 	if err != nil {
@@ -74,7 +79,7 @@ func (b *broadcast) Send(ignore IdentifiableEmitter, room, event string, msg int
 	r, ok := b.rooms[room]
 	b.Unlock()
 	if !ok {
-		return nil
+		return ErrRoomNotExist
 	}
 	return r.Send(ignore, event, msg)
 }
