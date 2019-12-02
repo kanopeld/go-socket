@@ -1,13 +1,8 @@
 package core
 
 import (
-	"errors"
 	"net"
 	"reflect"
-)
-
-var (
-	ErrUnsupportedArgType = errors.New("received arg type is not support")
 )
 
 type Emitter interface {

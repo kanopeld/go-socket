@@ -39,7 +39,7 @@ func newClientHandler(c core.SClient, bh core.HandlerSharer) *clientHandler {
 			Events:           bh.GetEvents(),
 			BroadcastAdaptor: bh.GetBroadcast(),
 			RWMutex:          &sync.RWMutex{},
-			CallerMaker:      NewCaller,
+			CallerMaker:      core.GetCaller("SClient"),
 		},
 		client: c,
 	}

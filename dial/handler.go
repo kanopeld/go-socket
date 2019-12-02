@@ -30,7 +30,7 @@ func (h *clientHandler) call(event string, data []byte) error {
 
 func newClientHandler(c core.DClient) *clientHandler {
 	ch := clientHandler{
-		BaseHandler: core.NewHandler(nil, NewDialCaller),
+		BaseHandler: core.NewHandler(nil, core.GetCaller("DClient")),
 		client:      c,
 	}
 	return &ch
