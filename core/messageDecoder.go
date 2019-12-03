@@ -4,9 +4,9 @@ package core
 func DecodeMessage(data []byte) Message {
 	var msg Message
 	name := ""
-	var start = false
-	var end = false
-	var endAt = 0
+	start := false
+	end := false
+	endAt := 0
 	for p, char := range data {
 		if char == CharStartEventName {
 			start = true

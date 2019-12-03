@@ -65,13 +65,13 @@ func TestDecodePackage(t *testing.T) {
 	})
 
 	convey.Convey("test get packet byte", t, func() {
-		var p1 = PackTypeEvent
+		p1 := PackTypeEvent
 		convey.So(p1.byte(), convey.ShouldEqual, 0x02)
 
-		var p2 = PackTypeConnect
+		p2 := PackTypeConnect
 		convey.So(p2.byte(), convey.ShouldEqual, 0x00)
 
-		var p3 = PackTypeDisconnect
+		p3 := PackTypeDisconnect
 		convey.So(p3.byte(), convey.ShouldEqual, 0x01)
 	})
 }
