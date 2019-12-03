@@ -9,6 +9,7 @@ import (
 type Server interface {
 	Start()
 	Stop()
+	core.Handler
 }
 
 type server struct {
