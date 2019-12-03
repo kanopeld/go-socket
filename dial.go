@@ -59,7 +59,7 @@ func (d *dial) loop() {
 			return
 		}
 
-		p, err := DecodePackage(msg)
+		p, err := decodePackage(msg)
 		if err != nil {
 			return
 		}
@@ -77,7 +77,7 @@ func (d *dial) loop() {
 		case PackTypeDisconnect:
 			return
 		case PackTypeEvent:
-			msg := DecodeMessage(p.Payload)
+			msg := decodeMessage(p.Payload)
 			if err := d.call(msg.EventName, msg.Data); err != nil {
 				return
 			}

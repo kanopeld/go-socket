@@ -49,7 +49,7 @@ func (c *client) Loop() {
 			return
 		}
 
-		p, err := DecodePackage(msg)
+		p, err := decodePackage(msg)
 		if err != nil {
 			return
 		}
@@ -62,7 +62,7 @@ func (c *client) Loop() {
 		case PackTypeDisconnect:
 			return
 		case PackTypeEvent:
-			msg := DecodeMessage(p.Payload)
+			msg := decodeMessage(p.Payload)
 			if err := c.call(msg.EventName, msg.Data); err != nil {
 				return
 			}
