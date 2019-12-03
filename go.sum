@@ -1,12 +1,7 @@
+github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1 h1:EGx4pi6eqNxGaHF6qqu48+N2wcFQ5qg5FXgOdqsJ5d8=
 github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1/go.mod h1:wJfORRmW1u3UXTncJ5qlYoELFm8eSnnEO6hX4iZ3EWY=
 github.com/jtolds/gls v4.20.0+incompatible h1:xdiiI2gbIgH/gLH7ADydsJ1uDOEzR8yvV7C0MuV77Wo=
 github.com/jtolds/gls v4.20.0+incompatible/go.mod h1:QJZ7F/aHp+rZTRtaJ1ow/lLfFfVYBRgL+9YlvaHOwJU=
-github.com/kanopeld/go-socket/core v0.0.0-20191203105213-49ba7000227a h1:mmFkxsI3d+doifg1Wm4fW41/rfkbxqTBxF3QigbM868=
-github.com/kanopeld/go-socket/core v0.0.0-20191203105213-49ba7000227a/go.mod h1:D/IuHUdBdZsXUM0vZ5XtLpM+RFZXfJUwC5QZl1ctQLc=
-github.com/kanopeld/go-socket/dial v0.0.0-20191203105213-49ba7000227a h1:CAX/jKygWC7HE2TdIU/xTO3gj5DUapj2U1lv70IpsM0=
-github.com/kanopeld/go-socket/dial v0.0.0-20191203105213-49ba7000227a/go.mod h1:JRpSnEVES+GgCPHRVXYhyzN7DMXR2H6W5dHfieIpRkE=
-github.com/kanopeld/go-socket/server v0.0.0-20191203105213-49ba7000227a h1:RpbSFjKQ3d1QYHu4bwTUjPGbHEKpbJG3KYilQk4MrOU=
-github.com/kanopeld/go-socket/server v0.0.0-20191203105213-49ba7000227a/go.mod h1:X+EaXLxNpD9006kI/FYz7fUj+InWMwqudJNdCaDxKUA=
 github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d/go.mod h1:OnSkiWE9lh6wB0YB77sQom3nweQdgAjqCqsofrRNTgc=
 github.com/smartystreets/assertions v1.0.1 h1:voD4ITNjPL5jjBfgR/r8fPIIBrliWrWHeiJApdr3r4w=
 github.com/smartystreets/assertions v1.0.1/go.mod h1:kHHU4qYBaI3q23Pp3VPrmWhuIUrLW/7eUrw0BU5VaoM=
