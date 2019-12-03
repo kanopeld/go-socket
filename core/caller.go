@@ -8,7 +8,7 @@ import (
 //The interface
 type Caller interface {
 	Call(so Client, data []byte) []reflect.Value
-	GetArgs() []interface{}
+	ArgsLen() int
 	Socket() bool
 }
 
@@ -77,17 +77,9 @@ func GetCaller(name string) func(f interface{}) (Caller, error) {
 	}
 }
 
-//GetArgs function returns a slice of arguments. Used mainly in tests
-func (c *caller) GetArgs() []interface{} {
-	ret := make([]interface{}, len(c.Args))
-	for i, argT := range c.Args {
-		if argT.Kind() == reflect.Ptr {
-			argT = argT.Elem()
-		}
-		v := reflect.New(argT)
-		ret[i] = v.Interface()
-	}
-	return ret
+//ArgsLen function used only in tests cases for get args count
+func (c *caller) ArgsLen() int {
+	return len(c.Args)
 }
 
 //Call function calls the callback passed at creation. May panic if received arguments wrong
