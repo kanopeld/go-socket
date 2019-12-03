@@ -1,9 +1,5 @@
 package socket
 
-import (
-	"sync"
-)
-
 type serverHandler struct {
 	*BaseHandler
 	client SClient
@@ -11,7 +7,7 @@ type serverHandler struct {
 
 func (h *serverHandler) call(event string, data []byte) error {
 	h.RLock()
-	c, ok := h.Events[event]
+	c, ok := h.events[event]
 	h.RUnlock()
 	if !ok {
 		return nil
@@ -35,9 +31,8 @@ func (h *serverHandler) Broadcast(event string, msg interface{}) error {
 func newServerHandler(c SClient, bh HandlerSharer) *serverHandler {
 	return &serverHandler{
 		BaseHandler: &BaseHandler{
-			Events:           bh.GetEvents(),
+			events:           bh.GetEvents(),
 			BroadcastAdaptor: bh.GetBroadcast(),
-			RWMutex:          &sync.RWMutex{},
 			CallerMaker:      GetCaller("SClient"),
 		},
 		client: c,

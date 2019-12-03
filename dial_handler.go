@@ -7,7 +7,7 @@ type dialHandler struct {
 
 func (h *dialHandler) call(event string, data []byte) error {
 	h.RLock()
-	c, ok := h.Events[event]
+	c, ok := h.events[event]
 	h.RUnlock()
 	if !ok {
 		return nil

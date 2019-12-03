@@ -53,6 +53,8 @@ func (s *server) loop() {
 }
 
 func (s *server) Start() {
+	s.Lock()
+	defer s.Unlock()
 	s.loop()
 }
 

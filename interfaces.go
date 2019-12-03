@@ -16,7 +16,7 @@ type Handler interface {
 }
 
 type HandlerSharer interface {
-	GetEvents() Events
+	GetEvents() events
 	GetBroadcast() BroadcastAdaptor
 }
 

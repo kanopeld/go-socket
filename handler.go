@@ -2,22 +2,22 @@ package socket
 
 import "sync"
 
-type Events map[string]caller
+type events map[string]caller
 type CallerMaker func(f interface{}) (caller, error)
 
 type BaseHandler struct {
-	Events
-	*sync.RWMutex
+	events
+	sync.RWMutex
 	BroadcastAdaptor
 	CallerMaker
 }
 
 func NewHandler(adaptor BroadcastAdaptor, maker CallerMaker) *BaseHandler {
 	return &BaseHandler{
-		Events:           make(Events),
+		events:           make(events),
 		BroadcastAdaptor: adaptor,
 		CallerMaker:      maker,
-		RWMutex:          &sync.RWMutex{},
+		RWMutex:          sync.RWMutex{},
 	}
 }
 
@@ -27,23 +27,23 @@ func (h *BaseHandler) On(event string, f interface{}) error {
 		return err
 	}
 	h.Lock()
-	h.Events[event] = c
+	h.events[event] = c
 	h.Unlock()
 	return nil
 }
 
 func (h *BaseHandler) Off(event string) bool {
 	h.Lock()
-	_, ok := h.Events[event]
-	delete(h.Events, event)
+	_, ok := h.events[event]
+	delete(h.events, event)
 	h.Unlock()
 	return ok
 }
 
-func (h *BaseHandler) GetEvents() Events {
+func (h *BaseHandler) GetEvents() events {
 	h.RLock()
 	defer h.RUnlock()
-	return h.Events
+	return h.events
 }
 
 func (h *BaseHandler) GetBroadcast() BroadcastAdaptor {

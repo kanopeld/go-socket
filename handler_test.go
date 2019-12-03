@@ -51,9 +51,7 @@ func TestBaseHandler_GetEvents(t *testing.T) {
 	convey.Convey("testing handler events getting", t, func() {
 		h := NewHandler(nil, GetCaller("test"))
 		convey.So(h, convey.ShouldNotBeNil)
-
-		events := h.GetEvents()
-		convey.So(events, convey.ShouldHaveLength, 0)
+		convey.So(h.events, convey.ShouldHaveLength, 0)
 	})
 }
 
