@@ -1,4 +1,4 @@
-package core
+package socket
 
 var (
 	CharStartEventName = []byte("[")[0]

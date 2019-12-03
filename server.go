@@ -1,7 +1,6 @@
-package server
+package socket
 
 import (
-	"github.com/kanopeld/go-socket/core"
 	"net"
 	"sync"
 )
@@ -9,11 +8,11 @@ import (
 type Server interface {
 	Start()
 	Stop()
-	core.Handler
+	Handler
 }
 
 type server struct {
-	*core.BaseHandler
+	*BaseHandler
 	ln net.Listener
 	sync.Mutex
 	closeChan chan struct{}
@@ -25,7 +24,7 @@ func NewServer(port string) (Server, error) {
 		return nil, err
 	}
 	s := &server{
-		BaseHandler: core.NewHandler(core.NewDefaultBroadcast(), core.GetCaller("SClient")),
+		BaseHandler: NewHandler(NewDefaultBroadcast(), GetCaller("SClient")),
 		ln:          ln,
 	}
 	return s, nil
