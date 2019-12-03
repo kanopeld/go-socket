@@ -10,6 +10,7 @@ var (
 )
 
 const (
+	//DefaultBroadcastRoomName name of default room in broadcast cluster. All new connections will be stored in room by this name
 	DefaultBroadcastRoomName = "defaultBroadcast"
 )
 
