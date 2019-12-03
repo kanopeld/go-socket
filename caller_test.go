@@ -15,64 +15,64 @@ func TestNewCaller(t *testing.T) {
 	convey.Convey("test normal caller with args", t, func() {
 		c, err := GetCaller("SClient")(func(c SClient, msg []byte) {})
 		convey.So(err, convey.ShouldBeNil)
-		convey.So(c.ArgsLen(), convey.ShouldEqual, 1)
-		convey.So(c.Socket(), convey.ShouldBeTrue)
+		convey.So(c.argsLen(), convey.ShouldEqual, 1)
+		convey.So(c.socket(), convey.ShouldBeTrue)
 	})
 
 	convey.Convey("test normal caller without client ", t, func() {
 		c, err := GetCaller("SClient")(func(msg []byte) {})
 		convey.So(err, convey.ShouldBeNil)
-		convey.So(c.ArgsLen(), convey.ShouldEqual, 1)
-		convey.So(c.Socket(), convey.ShouldBeFalse)
+		convey.So(c.argsLen(), convey.ShouldEqual, 1)
+		convey.So(c.socket(), convey.ShouldBeFalse)
 	})
 
 	convey.Convey("test normal caller call", t, func() {
 		c, err := GetCaller("SClient")(func(c SClient) {})
 		convey.So(err, convey.ShouldBeNil)
-		convey.So(c.ArgsLen(), convey.ShouldEqual, 0)
-		convey.So(c.Socket(), convey.ShouldBeTrue)
+		convey.So(c.argsLen(), convey.ShouldEqual, 0)
+		convey.So(c.socket(), convey.ShouldBeTrue)
 
-		retV := c.Call(&FakeServerClient{}, nil)
+		retV := c.call(&FakeServerClient{}, nil)
 		convey.So(retV, convey.ShouldHaveLength, 0)
 	})
 
 	convey.Convey("test normal caller call with msg", t, func() {
 		c, err := GetCaller("SClient")(func(c SClient, msg []byte) {})
 		convey.So(err, convey.ShouldBeNil)
-		convey.So(c.ArgsLen(), convey.ShouldEqual, 1)
-		convey.So(c.Socket(), convey.ShouldBeTrue)
+		convey.So(c.argsLen(), convey.ShouldEqual, 1)
+		convey.So(c.socket(), convey.ShouldBeTrue)
 
-		retV := c.Call(&FakeServerClient{}, []byte{0x00})
+		retV := c.call(&FakeServerClient{}, []byte{0x00})
 		convey.So(retV, convey.ShouldHaveLength, 0)
 	})
 
 	convey.Convey("test normal caller call without client", t, func() {
 		c, err := GetCaller("SClient")(func(msg []byte) {})
 		convey.So(err, convey.ShouldBeNil)
-		convey.So(c.ArgsLen(), convey.ShouldEqual, 1)
-		convey.So(c.Socket(), convey.ShouldBeFalse)
+		convey.So(c.argsLen(), convey.ShouldEqual, 1)
+		convey.So(c.socket(), convey.ShouldBeFalse)
 
-		retV := c.Call(&FakeServerClient{}, []byte("hello bytes"))
+		retV := c.call(&FakeServerClient{}, []byte("hello bytes"))
 		convey.So(retV, convey.ShouldHaveLength, 0)
 	})
 
 	convey.Convey("test normal caller call without client", t, func() {
 		c, err := GetCaller("SClient")(func(msg string) {})
 		convey.So(err, convey.ShouldBeNil)
-		convey.So(c.ArgsLen(), convey.ShouldEqual, 1)
-		convey.So(c.Socket(), convey.ShouldBeFalse)
+		convey.So(c.argsLen(), convey.ShouldEqual, 1)
+		convey.So(c.socket(), convey.ShouldBeFalse)
 
-		retV := c.Call(&FakeServerClient{}, []byte("hello string"))
+		retV := c.call(&FakeServerClient{}, []byte("hello string"))
 		convey.So(retV, convey.ShouldHaveLength, 0)
 	})
 
 	convey.Convey("test normal caller call without client. empty callback", t, func() {
 		c, err := GetCaller("SClient")(func() {})
 		convey.So(err, convey.ShouldBeNil)
-		convey.So(c.ArgsLen(), convey.ShouldEqual, 0)
-		convey.So(c.Socket(), convey.ShouldBeFalse)
+		convey.So(c.argsLen(), convey.ShouldEqual, 0)
+		convey.So(c.socket(), convey.ShouldBeFalse)
 
-		retV := c.Call(&FakeServerClient{}, nil)
+		retV := c.call(&FakeServerClient{}, nil)
 		convey.So(retV, convey.ShouldHaveLength, 0)
 	})
 
@@ -85,7 +85,7 @@ func TestNewCaller(t *testing.T) {
 	convey.Convey("test call caller with bytes slice", t, func() {
 		c, err := GetCaller("SClient")(func(msg []byte) {})
 		convey.So(err, convey.ShouldBeNil)
-		retV := c.Call(&FakeServerClient{}, []byte{0x0})
+		retV := c.call(&FakeServerClient{}, []byte{0x0})
 		convey.So(retV, convey.ShouldHaveLength, 0)
 	})
 
@@ -93,7 +93,7 @@ func TestNewCaller(t *testing.T) {
 		c, err := GetCaller("SClient")(func(msg string) {})
 		convey.So(err, convey.ShouldBeNil)
 
-		retV := c.Call(&FakeServerClient{}, []byte{0x0})
+		retV := c.call(&FakeServerClient{}, []byte{0x0})
 		convey.So(retV, convey.ShouldHaveLength, 0)
 	})
 

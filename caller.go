@@ -7,9 +7,9 @@ import (
 
 //The interface
 type caller interface {
-	Call(so Client, data []byte) []reflect.Value
-	ArgsLen() int
-	Socket() bool
+	call(so Client, data []byte) []reflect.Value
+	argsLen() int
+	socket() bool
 }
 
 var (
@@ -77,13 +77,13 @@ func GetCaller(name string) func(f interface{}) (caller, error) {
 	}
 }
 
-//ArgsLen function used only in tests cases for get args count
-func (c *call) ArgsLen() int {
+//argsLen function used only in tests cases for get args count
+func (c *call) argsLen() int {
 	return len(c.Args)
 }
 
 //Call function calls the callback passed at creation. May panic if received arguments wrong
-func (c *call) Call(so Client, data []byte) []reflect.Value {
+func (c *call) call(so Client, data []byte) []reflect.Value {
 	a := make([]reflect.Value, 0)
 	if c.NeedSocket {
 		a = append(a, reflect.ValueOf(so))
@@ -100,6 +100,6 @@ func (c *call) Call(so Client, data []byte) []reflect.Value {
 
 //Socket function returns the flag whether it needs a socket object to run.
 //The flag is set at the stage of Caller creation.
-func (c *call) Socket() bool {
+func (c *call) socket() bool {
 	return c.NeedSocket
 }

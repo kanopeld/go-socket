@@ -16,7 +16,7 @@ func (h *serverHandler) call(event string, data []byte) error {
 	if !ok {
 		return nil
 	}
-	retV := c.Call(h.client, data)
+	retV := c.call(h.client, data)
 	if len(retV) == 0 {
 		return nil
 	}
