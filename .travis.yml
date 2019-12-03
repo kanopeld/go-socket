@@ -1,0 +1,7 @@
+language: go
+go:
+  - 1.13.x
+jobs:
+  include:
+    - stage: test
+      script: ./travis_test_core 1
