@@ -1,4 +1,4 @@
-package server
+package socket
 
 import (
 	"github.com/smartystreets/goconvey/convey"

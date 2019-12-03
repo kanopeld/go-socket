@@ -1,4 +1,4 @@
-package core
+package socket
 
 const (
 	PackTypeConnect       PackageType = 0x0

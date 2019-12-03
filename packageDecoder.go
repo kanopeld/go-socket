@@ -1,4 +1,4 @@
-package core
+package socket
 
 // DecodePackage creates a package from a given message
 func DecodePackage(msg []byte) (Package, error) {

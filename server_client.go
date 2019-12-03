@@ -1,44 +1,44 @@
-package server
+package socket
 
 import (
 	"bufio"
-	"github.com/kanopeld/go-socket/core"
+
 	"net"
 	"strconv"
 	"time"
 )
 
 type client struct {
-	*clientHandler
-	core.Emitter
+	*serverHandler
+	Emitter
 	conn net.Conn
 	id   string
 	disc bool
 }
 
-func newClient(conn net.Conn, base core.HandlerSharer) (core.Looper, error) {
+func newClient(conn net.Conn, base HandlerSharer) (Looper, error) {
 	nc := &client{
 		conn:    conn,
 		id:      newID(conn),
-		Emitter: core.GetEmitter(conn),
+		Emitter: GetEmitter(conn),
 	}
-	nc.clientHandler = newClientHandler(nc, base)
-	err := nc.Join(core.DefaultBroadcastRoomName, nc)
+	nc.serverHandler = newServerHandler(nc, base)
+	err := nc.Join(DefaultBroadcastRoomName, nc)
 	if err != nil {
-		_ = nc.Leave(core.DefaultBroadcastRoomName, nc)
+		_ = nc.Leave(DefaultBroadcastRoomName, nc)
 		return nil, err
 	}
 	return nc, nil
 }
 
 func (c *client) sendConnect() {
-	_, _ = c.conn.Write(core.Package{PT: core.PackTypeConnect, Payload: []byte(c.id)}.MarshalBinary())
+	_, _ = c.conn.Write(Package{PT: PackTypeConnect, Payload: []byte(c.id)}.MarshalBinary())
 }
 
 func (c *client) Loop() {
 	defer func() {
 		c.Disconnect()
-		_ = c.Leave(core.DefaultBroadcastRoomName, c)
+		_ = c.Leave(DefaultBroadcastRoomName, c)
 	}()
 
 	c.sendConnect()
@@ -49,20 +49,20 @@ func (c *client) Loop() {
 			return
 		}
 
-		p, err := core.DecodePackage(msg)
+		p, err := DecodePackage(msg)
 		if err != nil {
 			return
 		}
 
 		switch p.PT {
-		case core.PackTypeConnectAccept:
-			if err := c.call(core.ConnectionName, nil); err != nil {
+		case PackTypeConnectAccept:
+			if err := c.call(ConnectionName, nil); err != nil {
 				return
 			}
-		case core.PackTypeDisconnect:
+		case PackTypeDisconnect:
 			return
-		case core.PackTypeEvent:
-			msg := core.DecodeMessage(p.Payload)
+		case PackTypeEvent:
+			msg := DecodeMessage(p.Payload)
 			if err := c.call(msg.EventName, msg.Data); err != nil {
 				return
 			}
@@ -83,8 +83,8 @@ func (c *client) Disconnect() {
 		return
 	}
 	c.disc = true
-	_ = c.Send(&core.Package{PT: core.PackTypeDisconnect})
-	_ = c.call(core.DisconnectionName, nil)
+	_ = c.Send(&Package{PT: PackTypeDisconnect})
+	_ = c.call(DisconnectionName, nil)
 	_ = c.conn.Close()
 }
 
