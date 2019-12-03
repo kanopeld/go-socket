@@ -7,8 +7,8 @@ import (
 
 func TestNewHandler(t *testing.T) {
 	convey.Convey("testing get new handler", t, func() {
-		h := NewHandler(nil, func(f interface{}) (c Caller, err error) {
-			return &caller{}, nil
+		h := NewHandler(nil, func(f interface{}) (c caller, err error) {
+			return &call{}, nil
 		})
 		convey.So(h, convey.ShouldNotBeNil)
 	})
@@ -16,8 +16,8 @@ func TestNewHandler(t *testing.T) {
 
 func TestBaseHandler_On(t *testing.T) {
 	convey.Convey("testing On action", t, func() {
-		h := NewHandler(nil, func(f interface{}) (c Caller, err error) {
-			return &caller{}, nil
+		h := NewHandler(nil, func(f interface{}) (c caller, err error) {
+			return &call{}, nil
 		})
 		convey.So(h, convey.ShouldNotBeNil)
 
@@ -36,8 +36,8 @@ func TestBaseHandler_On(t *testing.T) {
 
 func TestBaseHandler_Off(t *testing.T) {
 	convey.Convey("testing OFF action", t, func() {
-		h := NewHandler(nil, func(f interface{}) (c Caller, err error) {
-			return &caller{}, nil
+		h := NewHandler(nil, func(f interface{}) (c caller, err error) {
+			return &call{}, nil
 		})
 
 		err := h.On("test", func() {})

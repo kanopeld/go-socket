@@ -2,8 +2,8 @@ package socket
 
 import "sync"
 
-type Events map[string]Caller
-type CallerMaker func(f interface{}) (Caller, error)
+type Events map[string]caller
+type CallerMaker func(f interface{}) (caller, error)
 
 type BaseHandler struct {
 	Events
