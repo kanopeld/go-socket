@@ -1,0 +1,6 @@
+github.com/kanopeld/go-socket/core v0.0.0-20191203105213-49ba7000227a h1:mmFkxsI3d+doifg1Wm4fW41/rfkbxqTBxF3QigbM868=
+github.com/kanopeld/go-socket/core v0.0.0-20191203105213-49ba7000227a/go.mod h1:D/IuHUdBdZsXUM0vZ5XtLpM+RFZXfJUwC5QZl1ctQLc=
+github.com/kanopeld/go-socket/dial v0.0.0-20191203105213-49ba7000227a h1:CAX/jKygWC7HE2TdIU/xTO3gj5DUapj2U1lv70IpsM0=
+github.com/kanopeld/go-socket/dial v0.0.0-20191203105213-49ba7000227a/go.mod h1:JRpSnEVES+GgCPHRVXYhyzN7DMXR2H6W5dHfieIpRkE=
+github.com/kanopeld/go-socket/server v0.0.0-20191203105213-49ba7000227a h1:RpbSFjKQ3d1QYHu4bwTUjPGbHEKpbJG3KYilQk4MrOU=
+github.com/kanopeld/go-socket/server v0.0.0-20191203105213-49ba7000227a/go.mod h1:X+EaXLxNpD9006kI/FYz7fUj+InWMwqudJNdCaDxKUA=
