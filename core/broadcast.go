@@ -57,13 +57,12 @@ func (b *broadcast) Join(room string, c IdentifiableEmitter) error {
 
 func (b *broadcast) Leave(room string, c IdentifiableEmitter) error {
 	b.RLock()
-	var r, ok = b.rooms[room]
+	r, ok := b.rooms[room]
 	b.RUnlock()
 	if !ok {
 		return ErrRoomNotExist
 	}
-	var err = r.RemoveClient(c)
-	if err != nil {
+	if err := r.RemoveClient(c); err != nil {
 		return err
 	}
 	if r.Len() <= 0 {

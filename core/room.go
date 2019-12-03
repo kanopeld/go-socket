@@ -45,7 +45,7 @@ func (r *room) SetClient(c IdentifiableEmitter) error {
 
 func (r *room) RemoveClient(client IdentifiableEmitter) error {
 	r.RLock()
-	var _, ok = r.clients[client.ID()]
+	_, ok := r.clients[client.ID()]
 	r.RUnlock()
 	if !ok {
 		return ErrClientInRoomNotExist
@@ -76,9 +76,9 @@ main:
 	return nil
 }
 
-func (r *room) ClientExist(c IdentifiableEmitter) bool {
+func (r *room) ClientExist(c IdentifiableEmitter) (ok bool) {
 	r.RLock()
-	var _, ok = r.clients[c.ID()]
+	_, ok = r.clients[c.ID()]
 	r.RUnlock()
 	return ok
 }
