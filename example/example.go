@@ -9,16 +9,18 @@ import (
 )
 
 func main() {
-	//create new server
+	//create new socket  server
 	s, err := server.NewServer(":6500")
 	if err != nil {
 		panic(err)
 	}
 
-	//when new client connecting, server will call "connection" event.
-	err = s.On("connection", func(c core.SClient) {
+	//When connecting a new client, the connection event will be raised, therefore for this to work, such a handler must be defined
+	//core.ConnectionName=="connection"
+	err = s.On(core.ConnectionName, func(c core.SClient) {
 		fmt.Printf("connected %s\n", c.ID())
 
+		//All other handlers we assign to the newly created socket
 		err = c.On("test", func(c core.SClient, data []byte) {
 			fmt.Println("server got test event")
 			fmt.Printf("Test (%s) message\n", string(data))
@@ -31,7 +33,8 @@ func main() {
 
 		_ = c.Broadcast("test1", nil)
 
-		_ = c.On("disconnection", func() {
+		//core.DisconnectionName=="disconnection"
+		_ = c.On(core.DisconnectionName, func() {
 			fmt.Println("Server disc")
 		})
 	})
@@ -40,14 +43,15 @@ func main() {
 		panic(err)
 	}
 
-	//this method will block next code and wait when program finish or will called Stop() method
+	//this method will block next code and wait when program finish or you can call Stop() method and that stop it
 	go s.Start()
 
+	//Thus, we establish a connection to the server. At the time of opening, the server receives a message and a connection event is called on it
 	d, err := dial.NewDial("localhost:6500")
 	if err != nil {
 		panic(err)
 	}
-	err = d.On("connection", func(c core.DClient) {
+	err = d.On(core.ConnectionName, func(c core.DClient) {
 		fmt.Print("dial Commect!")
 		_ = c.On("test", func() {
 			go func() {
@@ -56,7 +60,7 @@ func main() {
 		})
 		_ = c.Emit("test", "hello")
 
-		_ = c.On("disconnection", func() {
+		_ = c.On(core.DisconnectionName, func() {
 			fmt.Println("Dial disc")
 		})
 
@@ -69,7 +73,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	err = d1.On("connection", func(c core.DClient) {
+	err = d1.On(core.ConnectionName, func(c core.DClient) {
 		_ = c.On("test", func() {
 			go func() {
 				fmt.Println("dial got test event")
@@ -77,7 +81,7 @@ func main() {
 		})
 		_ = c.Emit("test", "hello")
 
-		_ = c.On("disconnection", func() {
+		_ = c.On(core.DisconnectionName, func() {
 			fmt.Println("Dial disc")
 		})
 

@@ -56,7 +56,7 @@ func (c *client) Loop() {
 
 		switch p.PT {
 		case core.PackTypeConnectAccept:
-			if err := c.call(CONNECTION_NAME, nil); err != nil {
+			if err := c.call(core.ConnectionName, nil); err != nil {
 				return
 			}
 		case core.PackTypeDisconnect:
@@ -84,7 +84,7 @@ func (c *client) Disconnect() {
 	}
 	c.disc = true
 	_ = c.Send(&core.Package{PT: core.PackTypeDisconnect})
-	_ = c.call(DISCONNECTION_NAME, nil)
+	_ = c.call(core.DisconnectionName, nil)
 	_ = c.conn.Close()
 }
 

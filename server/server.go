@@ -19,7 +19,7 @@ func NewServer(port string) (*Server, error) {
 		return nil, err
 	}
 	s := &Server{
-		BaseHandler: core.NewHandler(core.NewDefaultBroadcast(), NewCaller),
+		BaseHandler: core.NewHandler(core.NewDefaultBroadcast(), core.GetCaller("SClient")),
 		ln:          ln,
 	}
 	return s, nil

@@ -24,20 +24,24 @@ type Disconnecter interface {
 	Disconnect()
 }
 
+//This interface is used as an extension of Emiiter
 type IdentifiableEmitter interface {
 	IDer
 	Emitter
 }
 
+//The main server interface. Include Broadcast interface
 type SClient interface {
 	Client
 	Broadcaster
 }
 
+//The main client interface. Not include Broadcast interface
 type DClient interface {
 	Client
 }
 
+//Basic client interface
 type Client interface {
 	Emitter
 	IDer
