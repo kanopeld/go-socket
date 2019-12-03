@@ -1,4 +1,4 @@
-package socket
+package core
 
 import (
 	"github.com/smartystreets/assertions/assert"

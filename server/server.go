@@ -1,27 +1,25 @@
-package socket
+package server
 
 import (
+	"github.com/kanopeld/go-socket/core"
 	"net"
 	"sync"
 )
 
-// Server controls the server side of a connection
 type Server struct {
-	*baseHandler
+	*core.BaseHandler
 	ln net.Listener
 	sync.Mutex
 	closeChan chan struct{}
 }
 
-// NewServer initializes a server
-func NewServer(p string) (*Server, error) {
-	ln, err := net.Listen("tcp", p)
+func NewServer(port string) (*Server, error) {
+	ln, err := net.Listen("tcp", port)
 	if err != nil {
 		return nil, err
 	}
-
 	s := &Server{
-		baseHandler: newBaseHandler(newDefaultBroadcast()),
+		BaseHandler: core.NewHandler(core.NewDefaultBroadcast(), core.GetCaller("SClient")),
 		ln:          ln,
 	}
 	return s, nil
@@ -31,7 +29,6 @@ func (s *Server) loop() {
 	defer func() {
 		_ = s.ln.Close()
 	}()
-
 	for {
 		select {
 		case <-s.closeChan:
@@ -41,22 +38,19 @@ func (s *Server) loop() {
 			if err != nil {
 				continue
 			}
-
-			c, err := newClient(conn, s.baseHandler)
+			c, err := newClient(conn, s.BaseHandler)
 			if err != nil || c == nil {
 				continue
 			}
-			go c.loop()
+			go c.Loop()
 		}
 	}
 }
 
-// Start starts the server
 func (s *Server) Start() {
 	s.loop()
 }
 
-// Stop stops the server
 func (s *Server) Stop() {
 	s.closeChan <- struct{}{}
 }

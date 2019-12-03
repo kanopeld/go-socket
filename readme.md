@@ -1,79 +1,16 @@
 ## TCP Socket.io-like library
+####Example usage you can see in example file into ./example directory.
 
-[![](https://img.shields.io/badge/godoc-reference-5272B4.svg)](https://godoc.org/github.com/kanopeld/go-socket)
-[![Go Report Card](https://goreportcard.com/badge/github.com/kanopeld/go-socket)](https://goreportcard.com/report/github.com/kanopeld/go-socket)
-![](https://github.com/kanopeld/go-socket/workflows/ci/badge.svg)
-
-Refactoring updates expected soon
-Example usage
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/ilya-beltiukov/socket"
-	"time"
-)
-
-func main() {
-	//create new server
-	s, err := socket.NewServer(":6500")
-	if err != nil {
-		panic(err)
-	}
-
-	//when new client connecting, server will call "connection" event.
-	err = s.On(socket.CONNECTION_NAME, func(c socket.Client) {
-		fmt.Printf("connected %s", c.ID())
-
-		err = c.On("test", func(data []byte) {
-			fmt.Println("server got test event")
-			fmt.Printf("Test (%s) message\n", string(data))
-
-			//Emit can get bytes slice, string or nil only
-			_ = c.Emit("test", nil)
-		})
-
-		if err != nil {
-			panic(err)
-		}
-
-		_ = c.On(socket.DISCONNECTION_NAME, func() {
-			fmt.Println("Server disc")
-		})
-	})
-
-	if err != nil {
-		panic(err)
-	}
-
-	//this method will block next code and wait when program finish or will called Stop() method
-	go s.Start()
-
-	d, err := socket.NewDial("localhost:6500")
-	if err != nil {
-		panic(err)
-	}
-	err = d.On(socket.CONNECTION_NAME, func(c socket.Client) {
-		_ = d.On("test", func() {
-			go func() {
-				fmt.Println("dial got test event")
-			}()
-		})
-		_ = d.Emit("test", "hello")
-
-
-		_ = d.On(socket.DISCONNECTION_NAME, func() {
-			fmt.Println("Dial disc")
-		})
-	})
-
-
-	//for make sure what dial code finished
-	time.Sleep(5 * time.Second)
-
-	//stop the server wait & close tcp connect
-	s.Stop()
+#####This library allows you to organize work with sockets through the convenient mechanism of "events". Here are some examples of use:
+``` go
+s, err := server.NewServer(":6500")
+if err != nil {
+    panic(err)
 }
+
+err = s.On("connection", func(c core.SClient) {
+    fmt.Println("Hello socket")
+})
 ```
+#####In this example, we started listening and accepting connections on port 6500. As soon as the client connects to our system, the connection event will be triggered (it is basic and mandatory) in the callback of which the socket object will be transferred, with which we will work in the future
+#####In the example above, we considered the core.SClient interface that is used on the server side. There is also a core.DClient interface used on the client side. Their difference in the absence of broadcast sending at the client
