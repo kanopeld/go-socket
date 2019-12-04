@@ -21,6 +21,7 @@ func newHandler(adaptor BroadcastAdaptor, maker callerMaker) *baseHandler {
 	}
 }
 
+//On registers an event handler under the given name.
 func (h *baseHandler) On(event string, f interface{}) error {
 	c, err := h.callerMaker(f)
 	if err != nil {
@@ -32,6 +33,7 @@ func (h *baseHandler) On(event string, f interface{}) error {
 	return nil
 }
 
+//Off deletes an event handler.
 func (h *baseHandler) Off(event string) bool {
 	h.hMu.Lock()
 	_, ok := h.events[event]
@@ -40,12 +42,14 @@ func (h *baseHandler) Off(event string) bool {
 	return ok
 }
 
+//getEvents returns all this handler's events
 func (h *baseHandler) getEvents() events {
 	h.hMu.RLock()
 	defer h.hMu.RUnlock()
 	return h.events
 }
 
+//getBroadcast return this handler's BroadcastAdaptor
 func (h *baseHandler) getBroadcast() BroadcastAdaptor {
 	return h.BroadcastAdaptor
 }

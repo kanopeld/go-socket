@@ -5,7 +5,9 @@ import (
 	"reflect"
 )
 
+//Emitter organizes sending events to the other side
 type Emitter interface {
+	//Emit sends an event to the other side
 	Emit(event string, arg interface{}) error
 	sender
 }
@@ -18,6 +20,7 @@ type defaultEmitter struct {
 	sender
 }
 
+//Emit sends an event to the other side
 func (de *defaultEmitter) Emit(event string, arg interface{}) error {
 	var data []byte
 	t := reflect.TypeOf(arg)
