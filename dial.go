@@ -7,7 +7,7 @@ import (
 )
 
 type dial struct {
-	*dialHandler
+	*clientHandler
 	Emitter
 	conn net.Conn
 	id   string
@@ -24,7 +24,7 @@ func NewDial(addr string) (DClient, error) {
 		conn:    conn,
 		Emitter: getEmitter(conn),
 	}
-	d.dialHandler = newDialHandler(d)
+	d.clientHandler = newDialHandler(d)
 	go d.loop()
 	return d, nil
 }
@@ -83,4 +83,12 @@ func (d *dial) loop() {
 			}
 		}
 	}
+}
+
+func newDialHandler(c Client) *clientHandler {
+	ch := clientHandler{
+		baseHandler: newHandler(nil, getCaller("DClient")),
+		client:      c,
+	}
+	return &ch
 }

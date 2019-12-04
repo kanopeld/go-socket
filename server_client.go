@@ -19,9 +19,9 @@ type client struct {
 func newClient(conn net.Conn, base handlerSharer) (looper, error) {
 	nc := &client{
 		conn:    conn,
-		id:      newID(conn),
 		Emitter: getEmitter(conn),
 	}
+	nc.setNewID()
 	nc.serverHandler = newServerHandler(nc, base)
 	err := nc.Join(DefaultBroadcastRoomName, nc)
 	if err != nil {
@@ -88,6 +88,6 @@ func (c *client) Disconnect() {
 	_ = c.conn.Close()
 }
 
-func newID(c net.Conn) string {
-	return strconv.Itoa(int(time.Now().Unix())) + c.RemoteAddr().String()
+func (c *client) setNewID() {
+	c.id = strconv.Itoa(int(time.Now().Unix())) + c.conn.RemoteAddr().String()
 }

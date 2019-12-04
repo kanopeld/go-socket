@@ -47,11 +47,11 @@ func TestBaseHandler_Off(t *testing.T) {
 	})
 }
 
-func TestBaseHandler_detEvents(t *testing.T) {
+func TestBaseHandler_getEvents(t *testing.T) {
 	convey.Convey("testing handler events getting", t, func() {
 		h := newHandler(nil, getCaller("test"))
 		convey.So(h, convey.ShouldNotBeNil)
-		convey.So(h.events, convey.ShouldHaveLength, 0)
+		convey.So(h.getEvents(), convey.ShouldHaveLength, 0)
 	})
 }
 

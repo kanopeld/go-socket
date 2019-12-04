@@ -1,16 +1,22 @@
 package socket
 
-type dialHandler struct {
+import "errors"
+
+var (
+	ErrEventNotExist = errors.New("events not exist")
+)
+
+type clientHandler struct {
 	*baseHandler
-	client DClient
+	client Client
 }
 
-func (h *dialHandler) call(event string, data []byte) error {
+func (h *clientHandler) call(event string, data []byte) error {
 	h.hMu.RLock()
 	c, ok := h.events[event]
 	h.hMu.RUnlock()
 	if !ok {
-		return nil
+		return ErrEventNotExist
 	}
 	retV := c.call(h.client, data)
 	if len(retV) == 0 {
@@ -22,12 +28,4 @@ func (h *dialHandler) call(event string, data []byte) error {
 		return err
 	}
 	return nil
-}
-
-func newDialHandler(c DClient) *dialHandler {
-	ch := dialHandler{
-		baseHandler: newHandler(nil, getCaller("DClient")),
-		client:      c,
-	}
-	return &ch
 }
