@@ -1,4 +1,4 @@
-module github.com/kanopeld/go-socket
+module github.com/kanopeld/socket
 
 go 1.13
 
