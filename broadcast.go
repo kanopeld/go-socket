@@ -32,7 +32,7 @@ type broadcast struct {
 	sync.RWMutex
 }
 
-func NewDefaultBroadcast() BroadcastAdaptor {
+func newDefaultBroadcast() BroadcastAdaptor {
 	b := &broadcast{
 		rooms: make(rooms, 0),
 	}
