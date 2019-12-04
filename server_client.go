@@ -16,7 +16,7 @@ type client struct {
 	disc bool
 }
 
-func newClient(conn net.Conn, base HandlerSharer) (Looper, error) {
+func newClient(conn net.Conn, base handlerSharer) (Looper, error) {
 	nc := &client{
 		conn:    conn,
 		id:      newID(conn),

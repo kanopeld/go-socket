@@ -15,9 +15,9 @@ type Handler interface {
 	Off(event string) bool
 }
 
-type HandlerSharer interface {
-	GetEvents() events
-	GetBroadcast() BroadcastAdaptor
+type handlerSharer interface {
+	getEvents() events
+	getBroadcast() BroadcastAdaptor
 }
 
 type Disconnecter interface {

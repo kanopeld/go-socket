@@ -28,11 +28,11 @@ func (h *serverHandler) Broadcast(event string, msg interface{}) error {
 	return h.BroadcastAdaptor.Send(h.client, DefaultBroadcastRoomName, event, msg)
 }
 
-func newServerHandler(c SClient, bh HandlerSharer) *serverHandler {
+func newServerHandler(c SClient, bh handlerSharer) *serverHandler {
 	return &serverHandler{
 		BaseHandler: &BaseHandler{
-			events:           bh.GetEvents(),
-			BroadcastAdaptor: bh.GetBroadcast(),
+			events:           bh.getEvents(),
+			BroadcastAdaptor: bh.getBroadcast(),
 			callerMaker:      getCaller("SClient"),
 		},
 		client: c,

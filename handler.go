@@ -40,12 +40,12 @@ func (h *BaseHandler) Off(event string) bool {
 	return ok
 }
 
-func (h *BaseHandler) GetEvents() events {
+func (h *BaseHandler) getEvents() events {
 	h.hMu.RLock()
 	defer h.hMu.RUnlock()
 	return h.events
 }
 
-func (h *BaseHandler) GetBroadcast() BroadcastAdaptor {
+func (h *BaseHandler) getBroadcast() BroadcastAdaptor {
 	return h.BroadcastAdaptor
 }
