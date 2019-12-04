@@ -13,12 +13,12 @@ func TestDecodePackage(t *testing.T) {
 		//Remove \n char. In real code this will remove by method ReadBytes("\n")!
 		comlPack := p[:len(p)-1]
 
-		pack, err := DecodePackage(comlPack)
+		pack, err := decodePackage(comlPack)
 		convey.So(err, convey.ShouldBeNil)
 		convey.So(pack.PT, convey.ShouldEqual, PackTypeEvent)
 		convey.So(pack.Payload, convey.ShouldHaveLength, len(msgByte))
 
-		msg := DecodeMessage(pack.Payload)
+		msg := decodeMessage(pack.Payload)
 		convey.So(msg.EventName, convey.ShouldEqual, "test")
 		convey.So(string(msg.Data), convey.ShouldEqual, "hello")
 	})
@@ -30,12 +30,12 @@ func TestDecodePackage(t *testing.T) {
 		//Remove \n char. In real code this will remove by method ReadBytes("\n")!
 		comlPack := p[:len(p)-1]
 
-		pack, err := DecodePackage(comlPack)
+		pack, err := decodePackage(comlPack)
 		convey.So(err, convey.ShouldBeNil)
 		convey.So(pack.PT, convey.ShouldEqual, PackTypeEvent)
 		convey.So(pack.Payload, convey.ShouldHaveLength, len(msgByte)-1)
 
-		msg := DecodeMessage(pack.Payload)
+		msg := decodeMessage(pack.Payload)
 		convey.So(msg.EventName, convey.ShouldEqual, "test")
 		convey.So(string(msg.Data), convey.ShouldEqual, "hello")
 	})
@@ -50,12 +50,12 @@ func TestDecodePackage(t *testing.T) {
 		//Remove \n char. In real code this will remove by method ReadBytes("\n")!
 		comlPack := p[:len(p)-1]
 
-		pack, err := DecodePackage(comlPack)
+		pack, err := decodePackage(comlPack)
 		convey.So(err, convey.ShouldBeNil)
 		convey.So(pack.PT, convey.ShouldEqual, PackTypeEvent)
 		convey.So(pack.Payload, convey.ShouldHaveLength, len(msgByte))
 
-		msg := DecodeMessage(pack.Payload)
+		msg := decodeMessage(pack.Payload)
 		convey.So(msg.EventName, convey.ShouldEqual, "test")
 		convey.So(msg.Data, convey.ShouldHaveLength, 3)
 

@@ -14,7 +14,7 @@ func TestMessage_MarshalBinary(t *testing.T) {
 		}
 
 		b := msg.MarshalBinary()
-		m := DecodeMessage(b)
+		m := decodeMessage(b)
 		convey.So(m.EventName, convey.ShouldNotBeEmpty)
 		assert.So(m.EventName, convey.ShouldEqual, "test")
 		convey.So(m.Data, convey.ShouldNotBeEmpty)
@@ -28,7 +28,7 @@ func TestMessage_MarshalBinary(t *testing.T) {
 		}
 
 		b := msg.MarshalBinary()
-		m := DecodeMessage(b)
+		m := decodeMessage(b)
 		convey.So(m.EventName, convey.ShouldNotBeEmpty)
 		assert.So(m.EventName, convey.ShouldEqual, "test")
 		convey.So(m.Data, convey.ShouldNotBeEmpty)

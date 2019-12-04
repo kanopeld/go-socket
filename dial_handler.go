@@ -6,13 +6,13 @@ type dialHandler struct {
 }
 
 func (h *dialHandler) call(event string, data []byte) error {
-	h.RLock()
-	c, ok := h.Events[event]
-	h.RUnlock()
+	h.hMu.RLock()
+	c, ok := h.events[event]
+	h.hMu.RUnlock()
 	if !ok {
 		return nil
 	}
-	retV := c.Call(h.client, data)
+	retV := c.call(h.client, data)
 	if len(retV) == 0 {
 		return nil
 	}
@@ -26,7 +26,7 @@ func (h *dialHandler) call(event string, data []byte) error {
 
 func newDialHandler(c DClient) *dialHandler {
 	ch := dialHandler{
-		BaseHandler: NewHandler(nil, GetCaller("DClient")),
+		BaseHandler: NewHandler(nil, getCaller("DClient")),
 		client:      c,
 	}
 	return &ch

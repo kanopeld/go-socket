@@ -6,10 +6,10 @@ import (
 )
 
 //The interface
-type Caller interface {
-	Call(so Client, data []byte) []reflect.Value
-	ArgsLen() int
-	Socket() bool
+type caller interface {
+	call(so Client, data []byte) []reflect.Value
+	argsLen() int
+	socket() bool
 }
 
 var (
@@ -20,25 +20,25 @@ var (
 	ErrFIsNotFunc = errors.New("f ins not a func")
 )
 
-type caller struct {
+type call struct {
 	Func       reflect.Value
 	Args       []reflect.Type
 	NeedSocket bool
 }
 
-//GetCaller function return a Caller interface. The parameter "name"
+//getCaller function return a Caller interface. The parameter "name"
 //is used in the closure of the function and in the future to check
 //which interface (its name) of the client is passed to it (function).
 //If this data is different, there will be an error
-func GetCaller(name string) func(f interface{}) (Caller, error) {
-	return func(f interface{}) (c Caller, err error) {
+func getCaller(name string) func(f interface{}) (caller, error) {
+	return func(f interface{}) (c caller, err error) {
 		fv := reflect.ValueOf(f)
 		if fv.Kind() != reflect.Func {
 			return nil, ErrFIsNotFunc
 		}
 		ft := fv.Type()
 		if ft.NumIn() == 0 {
-			return &caller{
+			return &call{
 				Func: fv,
 			}, nil
 		}
@@ -69,7 +69,7 @@ func GetCaller(name string) func(f interface{}) (Caller, error) {
 		if needSocket {
 			args = args[1:]
 		}
-		return &caller{
+		return &call{
 			Func:       fv,
 			Args:       args,
 			NeedSocket: needSocket,
@@ -77,13 +77,13 @@ func GetCaller(name string) func(f interface{}) (Caller, error) {
 	}
 }
 
-//ArgsLen function used only in tests cases for get args count
-func (c *caller) ArgsLen() int {
+//argsLen function used only in tests cases for get args count
+func (c *call) argsLen() int {
 	return len(c.Args)
 }
 
 //Call function calls the callback passed at creation. May panic if received arguments wrong
-func (c *caller) Call(so Client, data []byte) []reflect.Value {
+func (c *call) call(so Client, data []byte) []reflect.Value {
 	a := make([]reflect.Value, 0)
 	if c.NeedSocket {
 		a = append(a, reflect.ValueOf(so))
@@ -100,6 +100,6 @@ func (c *caller) Call(so Client, data []byte) []reflect.Value {
 
 //Socket function returns the flag whether it needs a socket object to run.
 //The flag is set at the stage of Caller creation.
-func (c *caller) Socket() bool {
+func (c *call) socket() bool {
 	return c.NeedSocket
 }

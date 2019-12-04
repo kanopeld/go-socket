@@ -2,50 +2,50 @@ package socket
 
 import "sync"
 
-type Events map[string]Caller
-type CallerMaker func(f interface{}) (Caller, error)
+type events map[string]caller
+type callerMaker func(f interface{}) (caller, error)
 
 type BaseHandler struct {
-	Events
-	*sync.RWMutex
+	events
+	hMu sync.RWMutex
 	BroadcastAdaptor
-	CallerMaker
+	callerMaker
 }
 
-func NewHandler(adaptor BroadcastAdaptor, maker CallerMaker) *BaseHandler {
+func NewHandler(adaptor BroadcastAdaptor, maker callerMaker) *BaseHandler {
 	return &BaseHandler{
-		Events:           make(Events),
+		events:           make(events),
 		BroadcastAdaptor: adaptor,
-		CallerMaker:      maker,
-		RWMutex:          &sync.RWMutex{},
+		callerMaker:      maker,
+		hMu:              sync.RWMutex{},
 	}
 }
 
 func (h *BaseHandler) On(event string, f interface{}) error {
-	c, err := h.CallerMaker(f)
+	c, err := h.callerMaker(f)
 	if err != nil {
 		return err
 	}
-	h.Lock()
-	h.Events[event] = c
-	h.Unlock()
+	h.hMu.Lock()
+	h.events[event] = c
+	h.hMu.Unlock()
 	return nil
 }
 
 func (h *BaseHandler) Off(event string) bool {
-	h.Lock()
-	_, ok := h.Events[event]
-	delete(h.Events, event)
-	h.Unlock()
+	h.hMu.Lock()
+	_, ok := h.events[event]
+	delete(h.events, event)
+	h.hMu.Unlock()
 	return ok
 }
 
-func (h *BaseHandler) GetEvents() Events {
-	h.RLock()
-	defer h.RUnlock()
-	return h.Events
+func (h *BaseHandler) getEvents() events {
+	h.hMu.RLock()
+	defer h.hMu.RUnlock()
+	return h.events
 }
 
-func (h *BaseHandler) GetBroadcast() BroadcastAdaptor {
+func (h *BaseHandler) getBroadcast() BroadcastAdaptor {
 	return h.BroadcastAdaptor
 }

@@ -1,17 +1,17 @@
 package socket
 
-// DecodeMessage splits a given message into its EventName and Data
-func DecodeMessage(data []byte) Message {
+// decodeMessage splits a given message into its EventName and Data
+func decodeMessage(data []byte) Message {
 	var msg Message
 	name := ""
 	start := false
 	end := false
 	endAt := 0
 	for p, char := range data {
-		if char == CharStartEventName {
+		if char == charStartEventName {
 			start = true
 			continue
-		} else if char == CharEndEventName {
+		} else if char == charEndEventName {
 			start = false
 			end = true
 		}

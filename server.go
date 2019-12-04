@@ -24,7 +24,7 @@ func NewServer(port string) (Server, error) {
 		return nil, err
 	}
 	s := &server{
-		BaseHandler: NewHandler(NewDefaultBroadcast(), GetCaller("SClient")),
+		BaseHandler: NewHandler(NewDefaultBroadcast(), getCaller("SClient")),
 		ln:          ln,
 	}
 	return s, nil
@@ -53,6 +53,8 @@ func (s *server) loop() {
 }
 
 func (s *server) Start() {
+	s.Lock()
+	defer s.Unlock()
 	s.loop()
 }
 
