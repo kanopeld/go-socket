@@ -1,8 +1,8 @@
 ## TCP Socket.io-like library
 
-[![](https://img.shields.io/badge/godoc-reference-5272B4.svg)](https://godoc.org/github.com/kanopeld/go-socket)
-[![Go Report Card](https://goreportcard.com/badge/github.com/kanopeld/go-socket)](https://goreportcard.com/report/github.com/kanopeld/go-socket)
-![](https://github.com/kanopeld/go-socket/workflows/ci/badge.svg)
+[![](https://img.shields.io/badge/godoc-reference-5272B4.svg)](https://godoc.org/github.com/kanopeld/socket)
+[![Go Report Card](https://goreportcard.com/badge/github.com/kanopeld/socket)](https://goreportcard.com/report/github.com/kanopeld/socket)
+![](https://github.com/kanopeld/socket/workflows/ci/badge.svg)
 
 ###Example usage you can see in example file into ./example directory.
 

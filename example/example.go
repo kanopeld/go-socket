@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/kanopeld/go-socket"
+	"github.com/kanopeld/socket"
 	"time"
 )
 
