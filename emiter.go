@@ -7,15 +7,15 @@ import (
 
 type Emitter interface {
 	Emit(event string, arg interface{}) error
-	Sender
+	sender
 }
 
-func GetEmitter(c net.Conn) Emitter {
+func getEmitter(c net.Conn) Emitter {
 	return &defaultEmitter{getSender(c)}
 }
 
 type defaultEmitter struct {
-	Sender
+	sender
 }
 
 func (de *defaultEmitter) Emit(event string, arg interface{}) error {
@@ -35,5 +35,5 @@ func (de *defaultEmitter) Emit(event string, arg interface{}) error {
 			return ErrUnsupportedArgType
 		}
 	}
-	return de.Send(&Package{PT: PackTypeEvent, Payload: Message{EventName: event, Data: data}.MarshalBinary()})
+	return de.send(&Package{PT: PackTypeEvent, Payload: Message{EventName: event, Data: data}.MarshalBinary()})
 }

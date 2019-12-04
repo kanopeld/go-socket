@@ -1,7 +1,7 @@
 package socket
 
 type serverHandler struct {
-	*BaseHandler
+	*baseHandler
 	client SClient
 }
 
@@ -30,7 +30,7 @@ func (h *serverHandler) Broadcast(event string, msg interface{}) error {
 
 func newServerHandler(c SClient, bh handlerSharer) *serverHandler {
 	return &serverHandler{
-		BaseHandler: &BaseHandler{
+		baseHandler: &baseHandler{
 			events:           bh.getEvents(),
 			BroadcastAdaptor: bh.getBroadcast(),
 			callerMaker:      getCaller("SClient"),

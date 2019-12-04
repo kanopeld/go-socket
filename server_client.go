@@ -16,11 +16,11 @@ type client struct {
 	disc bool
 }
 
-func newClient(conn net.Conn, base handlerSharer) (Looper, error) {
+func newClient(conn net.Conn, base handlerSharer) (looper, error) {
 	nc := &client{
 		conn:    conn,
 		id:      newID(conn),
-		Emitter: GetEmitter(conn),
+		Emitter: getEmitter(conn),
 	}
 	nc.serverHandler = newServerHandler(nc, base)
 	err := nc.Join(DefaultBroadcastRoomName, nc)
@@ -35,7 +35,7 @@ func (c *client) sendConnect() {
 	_, _ = c.conn.Write(Package{PT: PackTypeConnect, Payload: []byte(c.id)}.MarshalBinary())
 }
 
-func (c *client) Loop() {
+func (c *client) loop() {
 	defer func() {
 		c.Disconnect()
 		_ = c.Leave(DefaultBroadcastRoomName, c)
@@ -83,7 +83,7 @@ func (c *client) Disconnect() {
 		return
 	}
 	c.disc = true
-	_ = c.Send(&Package{PT: PackTypeDisconnect})
+	_ = c.send(&Package{PT: PackTypeDisconnect})
 	_ = c.call(DisconnectionName, nil)
 	_ = c.conn.Close()
 }

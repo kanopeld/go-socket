@@ -49,3 +49,7 @@ type Client interface {
 	Handler
 	Disconnecter
 }
+
+type looper interface {
+	loop()
+}

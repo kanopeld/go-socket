@@ -5,15 +5,15 @@ import "sync"
 type events map[string]caller
 type callerMaker func(f interface{}) (caller, error)
 
-type BaseHandler struct {
+type baseHandler struct {
 	events
 	hMu sync.RWMutex
 	BroadcastAdaptor
 	callerMaker
 }
 
-func NewHandler(adaptor BroadcastAdaptor, maker callerMaker) *BaseHandler {
-	return &BaseHandler{
+func newHandler(adaptor BroadcastAdaptor, maker callerMaker) *baseHandler {
+	return &baseHandler{
 		events:           make(events),
 		BroadcastAdaptor: adaptor,
 		callerMaker:      maker,
@@ -21,7 +21,7 @@ func NewHandler(adaptor BroadcastAdaptor, maker callerMaker) *BaseHandler {
 	}
 }
 
-func (h *BaseHandler) On(event string, f interface{}) error {
+func (h *baseHandler) On(event string, f interface{}) error {
 	c, err := h.callerMaker(f)
 	if err != nil {
 		return err
@@ -32,7 +32,7 @@ func (h *BaseHandler) On(event string, f interface{}) error {
 	return nil
 }
 
-func (h *BaseHandler) Off(event string) bool {
+func (h *baseHandler) Off(event string) bool {
 	h.hMu.Lock()
 	_, ok := h.events[event]
 	delete(h.events, event)
@@ -40,12 +40,12 @@ func (h *BaseHandler) Off(event string) bool {
 	return ok
 }
 
-func (h *BaseHandler) getEvents() events {
+func (h *baseHandler) getEvents() events {
 	h.hMu.RLock()
 	defer h.hMu.RUnlock()
 	return h.events
 }
 
-func (h *BaseHandler) getBroadcast() BroadcastAdaptor {
+func (h *baseHandler) getBroadcast() BroadcastAdaptor {
 	return h.BroadcastAdaptor
 }

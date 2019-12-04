@@ -12,7 +12,7 @@ type Server interface {
 }
 
 type server struct {
-	*BaseHandler
+	*baseHandler
 	ln net.Listener
 	sync.Mutex
 	closeChan chan struct{}
@@ -24,7 +24,7 @@ func NewServer(port string) (Server, error) {
 		return nil, err
 	}
 	s := &server{
-		BaseHandler: NewHandler(NewDefaultBroadcast(), getCaller("SClient")),
+		baseHandler: newHandler(newDefaultBroadcast(), getCaller("SClient")),
 		ln:          ln,
 	}
 	return s, nil
@@ -43,11 +43,11 @@ func (s *server) loop() {
 			if err != nil {
 				continue
 			}
-			c, err := newClient(conn, s.BaseHandler)
+			c, err := newClient(conn, s.baseHandler)
 			if err != nil || c == nil {
 				continue
 			}
-			go c.Loop()
+			go c.loop()
 		}
 	}
 }

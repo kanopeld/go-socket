@@ -22,7 +22,7 @@ func NewDial(addr string) (DClient, error) {
 
 	d := &dial{
 		conn:    conn,
-		Emitter: GetEmitter(conn),
+		Emitter: getEmitter(conn),
 	}
 	d.dialHandler = newDialHandler(d)
 	go d.loop()
@@ -42,7 +42,7 @@ func (d *dial) Disconnect() {
 		return
 	}
 	d.disc = true
-	_ = d.Send(&Package{PT: PackTypeDisconnect})
+	_ = d.send(&Package{PT: PackTypeDisconnect})
 	_ = d.call("disconnection", nil)
 	_ = d.conn.Close()
 }
@@ -67,7 +67,7 @@ func (d *dial) loop() {
 		switch p.PT {
 		case PackTypeConnect:
 			d.id = string(p.Payload)
-			if err = d.Send(&Package{PT: PackTypeConnectAccept}); err != nil {
+			if err = d.send(&Package{PT: PackTypeConnectAccept}); err != nil {
 				return
 			}
 
