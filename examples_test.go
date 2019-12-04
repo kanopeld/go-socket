@@ -1,17 +1,4 @@
-# go-socket
-
-TCP Socket.io-like library
-
-[![](https://img.shields.io/badge/godoc-reference-5272B4.svg)](https://godoc.org/github.com/kanopeld/socket)
-[![Go Report Card](https://goreportcard.com/badge/github.com/kanopeld/socket)](https://goreportcard.com/report/github.com/kanopeld/socket)
-![](https://github.com/kanopeld/socket/workflows/ci/badge.svg)
-
-### Quick start
-
-This library allows you to organize work with sockets through the convenient mechanism of "events". Here are some examples of use:
-
-```go
-package main
+package socket
 
 import (
 	"fmt"
@@ -19,7 +6,7 @@ import (
 	"time"
 )
 
-func main() {
+func Example_quickstart() {
 	// create new socket  server
 	s, err := socket.NewServer(":6500")
 	if err != nil {
@@ -107,9 +94,27 @@ func main() {
 	// stop the server wait & close tcp connect
 	s.Stop()
 }
-```
 
-In this example, we start listening and accepting connections on port 6500. As soon as a client connects to our server, the 'connection' event is triggered on both ends. Inside of our 'connection' event we define the remaining events on the received client object. We also use a predefined 'disconnection' event that gets triggered upon disconnection.\
-In the example above, we considered the SClient interface that is used on the server side. There is also a DClient interface used on the client side. Their difference in the absence of broadcast sending at the client
+func ExampleNewDial_dialling() {
+	c, err := socket.NewDial("localhost:6500")
+	if err != nil {
+		panic(err)
+	}
 
-**For a more thorough documentation see [godoc](https://godoc.org/github.com/kanopeld/go-socket)**
+	fmt.Println(c.Connection())
+
+	// Outputs: net.Conn object
+}
+
+func ExampleNewServer_creation() {
+	s, err := socket.NewServer(":6500")
+	if err != nil {
+		panic(err)
+	}
+
+	s.On(socket.ConnectionName, func(c socket.SClient) {
+		// ...
+	})
+
+	go s.Start()
+}
