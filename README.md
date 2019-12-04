@@ -112,4 +112,4 @@ func main() {
 In this example, we start listening and accepting connections on port 6500. As soon as a client connects to our server, the 'connection' event is triggered on both ends. Inside of our 'connection' event we define the remaining events on the received client object. We also use a predefined 'disconnection' event that gets triggered upon disconnection.\
 In the example above, we considered the SClient interface that is used on the server side. There is also a DClient interface used on the client side. Their difference in the absence of broadcast sending at the client
 
-**For a more thorough documentation see [godoc](https://godoc.org/github.com/kanopeld/go-socket)**
+**For a more thorough documentation see [godoc](https://godoc.org/github.com/kanopeld/socket)**
