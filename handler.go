@@ -3,46 +3,46 @@ package socket
 import "sync"
 
 type events map[string]caller
-type CallerMaker func(f interface{}) (caller, error)
+type callerMaker func(f interface{}) (caller, error)
 
 type BaseHandler struct {
 	events
-	sync.RWMutex
+	hMu sync.RWMutex
 	BroadcastAdaptor
-	CallerMaker
+	callerMaker
 }
 
-func NewHandler(adaptor BroadcastAdaptor, maker CallerMaker) *BaseHandler {
+func NewHandler(adaptor BroadcastAdaptor, maker callerMaker) *BaseHandler {
 	return &BaseHandler{
 		events:           make(events),
 		BroadcastAdaptor: adaptor,
-		CallerMaker:      maker,
-		RWMutex:          sync.RWMutex{},
+		callerMaker:      maker,
+		hMu:              sync.RWMutex{},
 	}
 }
 
 func (h *BaseHandler) On(event string, f interface{}) error {
-	c, err := h.CallerMaker(f)
+	c, err := h.callerMaker(f)
 	if err != nil {
 		return err
 	}
-	h.Lock()
+	h.hMu.Lock()
 	h.events[event] = c
-	h.Unlock()
+	h.hMu.Unlock()
 	return nil
 }
 
 func (h *BaseHandler) Off(event string) bool {
-	h.Lock()
+	h.hMu.Lock()
 	_, ok := h.events[event]
 	delete(h.events, event)
-	h.Unlock()
+	h.hMu.Unlock()
 	return ok
 }
 
 func (h *BaseHandler) GetEvents() events {
-	h.RLock()
-	defer h.RUnlock()
+	h.hMu.RLock()
+	defer h.hMu.RUnlock()
 	return h.events
 }
 

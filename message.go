@@ -1,8 +1,8 @@
 package socket
 
 var (
-	CharStartEventName = []byte("[")[0]
-	CharEndEventName   = []byte("]")[0]
+	charStartEventName = []byte("[")[0]
+	charEndEventName   = []byte("]")[0]
 )
 
 // Message stores information about a single message
@@ -14,9 +14,9 @@ type Message struct {
 // MarshalBinary serializes a message into bytes
 func (m Message) MarshalBinary() []byte {
 	res := make([]byte, 0)
-	res = append(res, CharStartEventName)
+	res = append(res, charStartEventName)
 	res = append(res, []byte(m.EventName)...)
-	res = append(res, CharEndEventName)
+	res = append(res, charEndEventName)
 	res = append(res, m.Data...)
 	return res
 }

@@ -8,10 +8,10 @@ func decodeMessage(data []byte) Message {
 	end := false
 	endAt := 0
 	for p, char := range data {
-		if char == CharStartEventName {
+		if char == charStartEventName {
 			start = true
 			continue
-		} else if char == CharEndEventName {
+		} else if char == charEndEventName {
 			start = false
 			end = true
 		}
