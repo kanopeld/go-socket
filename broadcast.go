@@ -15,9 +15,13 @@ const (
 )
 
 type Broadcaster interface {
+	//Broadcast sends an event to the other side to everyone in the specified room
 	Broadcast(event string, arg interface{}) error
 }
 
+//BroadcastAdaptor Available only on the server side.
+//Organizes work with user associations in groups called "rooms".
+//Serves to structure and identify possible zones of connected clients.
 type BroadcastAdaptor interface {
 	Join(room string, c IdentifiableEmitter) error
 	Leave(room string, c IdentifiableEmitter) error

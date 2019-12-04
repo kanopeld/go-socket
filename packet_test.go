@@ -66,12 +66,12 @@ func TestDecodePackage(t *testing.T) {
 
 	convey.Convey("test get packet byte", t, func() {
 		p1 := PackTypeEvent
-		convey.So(p1.byte(), convey.ShouldEqual, 0x02)
+		convey.So(p1.Byte(), convey.ShouldEqual, 0x02)
 
 		p2 := PackTypeConnect
-		convey.So(p2.byte(), convey.ShouldEqual, 0x00)
+		convey.So(p2.Byte(), convey.ShouldEqual, 0x00)
 
 		p3 := PackTypeDisconnect
-		convey.So(p3.byte(), convey.ShouldEqual, 0x01)
+		convey.So(p3.Byte(), convey.ShouldEqual, 0x01)
 	})
 }
