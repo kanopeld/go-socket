@@ -32,7 +32,7 @@ func TestNewCaller(t *testing.T) {
 		convey.So(c.argsLen(), convey.ShouldEqual, 0)
 		convey.So(c.socket(), convey.ShouldBeTrue)
 
-		retV := c.call(&FakeServerClient{}, nil)
+		retV := c.call(&fakeServerClient{}, nil)
 		convey.So(retV, convey.ShouldHaveLength, 0)
 	})
 
@@ -42,7 +42,7 @@ func TestNewCaller(t *testing.T) {
 		convey.So(c.argsLen(), convey.ShouldEqual, 1)
 		convey.So(c.socket(), convey.ShouldBeTrue)
 
-		retV := c.call(&FakeServerClient{}, []byte{0x00})
+		retV := c.call(&fakeServerClient{}, []byte{0x00})
 		convey.So(retV, convey.ShouldHaveLength, 0)
 	})
 
@@ -52,7 +52,7 @@ func TestNewCaller(t *testing.T) {
 		convey.So(c.argsLen(), convey.ShouldEqual, 1)
 		convey.So(c.socket(), convey.ShouldBeFalse)
 
-		retV := c.call(&FakeServerClient{}, []byte("hello bytes"))
+		retV := c.call(&fakeServerClient{}, []byte("hello bytes"))
 		convey.So(retV, convey.ShouldHaveLength, 0)
 	})
 
@@ -62,7 +62,7 @@ func TestNewCaller(t *testing.T) {
 		convey.So(c.argsLen(), convey.ShouldEqual, 1)
 		convey.So(c.socket(), convey.ShouldBeFalse)
 
-		retV := c.call(&FakeServerClient{}, []byte("hello string"))
+		retV := c.call(&fakeServerClient{}, []byte("hello string"))
 		convey.So(retV, convey.ShouldHaveLength, 0)
 	})
 
@@ -72,7 +72,7 @@ func TestNewCaller(t *testing.T) {
 		convey.So(c.argsLen(), convey.ShouldEqual, 0)
 		convey.So(c.socket(), convey.ShouldBeFalse)
 
-		retV := c.call(&FakeServerClient{}, nil)
+		retV := c.call(&fakeServerClient{}, nil)
 		convey.So(retV, convey.ShouldHaveLength, 0)
 	})
 
@@ -85,7 +85,7 @@ func TestNewCaller(t *testing.T) {
 	convey.Convey("test call caller with bytes slice", t, func() {
 		c, err := getCaller("SClient")(func(msg []byte) {})
 		convey.So(err, convey.ShouldBeNil)
-		retV := c.call(&FakeServerClient{}, []byte{0x0})
+		retV := c.call(&fakeServerClient{}, []byte{0x0})
 		convey.So(retV, convey.ShouldHaveLength, 0)
 	})
 
@@ -93,7 +93,7 @@ func TestNewCaller(t *testing.T) {
 		c, err := getCaller("SClient")(func(msg string) {})
 		convey.So(err, convey.ShouldBeNil)
 
-		retV := c.call(&FakeServerClient{}, []byte{0x0})
+		retV := c.call(&fakeServerClient{}, []byte{0x0})
 		convey.So(retV, convey.ShouldHaveLength, 0)
 	})
 

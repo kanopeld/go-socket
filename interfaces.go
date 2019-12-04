@@ -47,9 +47,8 @@ type DClient interface {
 	Client
 }
 
-//Basic client interface
+//Basic client interface. Includes all basic functions
 type Client interface {
-	//Emitter organizes sending events to the other side
 	Emitter
 	IDer
 	Connectioner
