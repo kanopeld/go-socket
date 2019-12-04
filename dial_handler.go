@@ -26,7 +26,7 @@ func (h *dialHandler) call(event string, data []byte) error {
 
 func newDialHandler(c DClient) *dialHandler {
 	ch := dialHandler{
-		BaseHandler: NewHandler(nil, GetCaller("DClient")),
+		BaseHandler: NewHandler(nil, getCaller("DClient")),
 		client:      c,
 	}
 	return &ch

@@ -33,7 +33,7 @@ func newServerHandler(c SClient, bh HandlerSharer) *serverHandler {
 		BaseHandler: &BaseHandler{
 			events:           bh.GetEvents(),
 			BroadcastAdaptor: bh.GetBroadcast(),
-			CallerMaker:      GetCaller("SClient"),
+			CallerMaker:      getCaller("SClient"),
 		},
 		client: c,
 	}

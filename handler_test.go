@@ -26,7 +26,7 @@ func TestBaseHandler_On(t *testing.T) {
 	})
 
 	convey.Convey("testing ON action with error", t, func() {
-		h := NewHandler(nil, GetCaller("test"))
+		h := NewHandler(nil, getCaller("test"))
 		convey.So(h, convey.ShouldNotBeNil)
 
 		err := h.On("test", func(i int) {})
@@ -49,7 +49,7 @@ func TestBaseHandler_Off(t *testing.T) {
 
 func TestBaseHandler_GetEvents(t *testing.T) {
 	convey.Convey("testing handler events getting", t, func() {
-		h := NewHandler(nil, GetCaller("test"))
+		h := NewHandler(nil, getCaller("test"))
 		convey.So(h, convey.ShouldNotBeNil)
 		convey.So(h.events, convey.ShouldHaveLength, 0)
 	})
@@ -57,7 +57,7 @@ func TestBaseHandler_GetEvents(t *testing.T) {
 
 func TestBaseHandler_GetBroadcast(t *testing.T) {
 	convey.Convey("testing get broadcast", t, func() {
-		h := NewHandler(nil, GetCaller("test"))
+		h := NewHandler(nil, getCaller("test"))
 		convey.So(h, convey.ShouldNotBeNil)
 		b := h.GetBroadcast()
 		convey.So(b, convey.ShouldBeNil)

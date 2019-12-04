@@ -26,11 +26,11 @@ type call struct {
 	NeedSocket bool
 }
 
-//GetCaller function return a Caller interface. The parameter "name"
+//getCaller function return a Caller interface. The parameter "name"
 //is used in the closure of the function and in the future to check
 //which interface (its name) of the client is passed to it (function).
 //If this data is different, there will be an error
-func GetCaller(name string) func(f interface{}) (caller, error) {
+func getCaller(name string) func(f interface{}) (caller, error) {
 	return func(f interface{}) (c caller, err error) {
 		fv := reflect.ValueOf(f)
 		if fv.Kind() != reflect.Func {
