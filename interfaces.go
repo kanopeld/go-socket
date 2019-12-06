@@ -14,14 +14,9 @@ type Connectioner interface {
 
 type Handler interface {
 	//On registers an event handler under the given name.
-	On(event string, f interface{}) error
-	//Off deletes an event handler.
+	On(event string, c HandlerCallback)
+	//Off deletes an event handler. Return true if event was exist
 	Off(event string) bool
-}
-
-type handlerSharer interface {
-	getEvents() events
-	getBroadcast() BroadcastAdaptor
 }
 
 type Disconnecter interface {
@@ -36,17 +31,6 @@ type IdentifiableEmitter interface {
 	Emitter
 }
 
-//The main server interface. Include Broadcast interface
-type SClient interface {
-	Client
-	Broadcaster
-}
-
-//The main client interface. Not include Broadcast interface
-type DClient interface {
-	Client
-}
-
 //Basic client interface. Includes all basic functions
 type Client interface {
 	Emitter
@@ -54,8 +38,11 @@ type Client interface {
 	Connectioner
 	Handler
 	Disconnecter
+	Broadcaster
 }
 
 type looper interface {
 	loop()
 }
+
+type HandlerCallback func(c Client, data []byte) error

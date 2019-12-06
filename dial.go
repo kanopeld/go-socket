@@ -14,7 +14,7 @@ type dial struct {
 	disc bool
 }
 
-func NewDial(addr string) (DClient, error) {
+func NewDial(addr string) (Client, error) {
 	conn, err := net.Dial("tcp", addr)
 	if err != nil {
 		return nil, err
@@ -24,7 +24,7 @@ func NewDial(addr string) (DClient, error) {
 		conn:    conn,
 		Emitter: getEmitter(conn),
 	}
-	d.clientHandler = newDialHandler(d)
+	d.clientHandler = newClientHandler(d, nil)
 	go d.loop()
 	return d, nil
 }
@@ -83,12 +83,4 @@ func (d *dial) loop() {
 			}
 		}
 	}
-}
-
-func newDialHandler(c Client) *clientHandler {
-	ch := clientHandler{
-		baseHandler: newHandler(nil, getCaller("DClient")),
-		client:      c,
-	}
-	return &ch
 }

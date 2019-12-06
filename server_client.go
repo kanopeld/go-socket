@@ -9,20 +9,20 @@ import (
 )
 
 type client struct {
-	*serverHandler
+	*clientHandler
 	Emitter
 	conn net.Conn
 	id   string
 	disc bool
 }
 
-func newClient(conn net.Conn, base handlerSharer) (looper, error) {
+func newClient(conn net.Conn, base *baseHandler) (looper, error) {
 	nc := &client{
 		conn:    conn,
 		Emitter: getEmitter(conn),
 	}
 	nc.setNewID()
-	nc.serverHandler = newServerHandler(nc, base)
+	nc.clientHandler = newClientHandler(nc, base)
 	err := nc.Join(DefaultBroadcastRoomName, nc)
 	if err != nil {
 		_ = nc.Leave(DefaultBroadcastRoomName, nc)

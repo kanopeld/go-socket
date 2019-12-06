@@ -15,31 +15,26 @@ func Example_quickstart() {
 
 	// When connecting a new client, the connection event will be raised, therefore for this to work, such a handler must be defined
 	// ConnectionName=="connection"
-	err = s.On(socket.ConnectionName, func(c socket.SClient) {
+	s.On(socket.ConnectionName, func(c socket.Client, data []byte) error {
 		fmt.Println("connected", c.ID())
 
 		// All other handlers we assign to the newly created socket
-		err = c.On("test", func(c socket.SClient, data []byte) {
+		c.On("test", func(c socket.Client, data []byte) error {
 			fmt.Println("server got test event")
 			fmt.Printf("Test (%s) message\n", string(data))
 			_ = c.Emit("test", nil)
+			return nil
 		})
-
-		if err != nil {
-			panic(err)
-		}
 
 		_ = c.Broadcast("test1", nil)
 
 		// DisconnectionName=="disconnection"
-		_ = c.On(socket.DisconnectionName, func() {
+		c.On(socket.DisconnectionName, func(c socket.Client, data []byte) error {
 			fmt.Println("Server disc")
+			return nil
 		})
+		return nil
 	})
-
-	if err != nil {
-		panic(err)
-	}
 
 	// this is a blocking method so we will spawn a goroutine for it. Use s.Stop() to stop the server
 	go s.Start()
@@ -49,43 +44,51 @@ func Example_quickstart() {
 	if err != nil {
 		panic(err)
 	}
-	err = d1.On(socket.ConnectionName, func(c socket.DClient) {
+	d1.On(socket.ConnectionName, func(c socket.Client, data []byte) error {
 		fmt.Println("d1 Connect!")
-		_ = c.On("test", func() {
+		c.On("test", func(c socket.Client, data []byte) error {
 			go func() {
 				fmt.Println("d1 got test event")
 			}()
+			return nil
 		})
-		_ = c.Emit("test", "hello")
+		_ = c.Emit("test", []byte("hello"))
 
-		_ = c.On(socket.DisconnectionName, func() {
+		c.On(socket.DisconnectionName, func(c socket.Client, data []byte) error {
 			fmt.Println("d1 disc")
+			return nil
 		})
 
-		_ = c.On("test1", func() {
+		c.On("test1", func(c socket.Client, data []byte) error {
 			fmt.Println("d1 got dial broadcast")
+			return nil
 		})
+		return nil
 	})
 
 	d2, err := socket.NewDial("localhost:6500")
 	if err != nil {
 		panic(err)
 	}
-	err = d2.On(socket.ConnectionName, func(c socket.DClient) {
-		_ = c.On("test", func() {
+	d2.On(socket.ConnectionName, func(c socket.Client, data []byte) error {
+		c.On("test", func(c socket.Client, data []byte) error {
 			go func() {
 				fmt.Println("d2 got test event")
 			}()
+			return nil
 		})
-		_ = c.Emit("test", "hello")
+		_ = c.Emit("test", []byte("hello"))
 
-		_ = c.On(socket.DisconnectionName, func() {
+		c.On(socket.DisconnectionName, func(c socket.Client, data []byte) error {
 			fmt.Println("d2 disc")
+			return nil
 		})
 
-		_ = c.On("test1", func() {
+		c.On("test1", func(c socket.Client, data []byte) error {
 			fmt.Println("d2 got dial 1 broadcast")
+			return nil
 		})
+		return nil
 	})
 
 	// for make sure what dial code finished
@@ -112,8 +115,9 @@ func ExampleNewServer_creation() {
 		panic(err)
 	}
 
-	s.On(socket.ConnectionName, func(c socket.SClient) {
+	s.On(socket.ConnectionName, func(c socket.Client, data []byte) error {
 		// ...
+		return nil
 	})
 
 	go s.Start()
