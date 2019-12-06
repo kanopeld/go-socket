@@ -116,3 +116,5 @@ In this example, we start listening and accepting connections on port 6500. As s
 In the example above, we considered the SClient interface that is used on the server side. There is also a DClient interface used on the client side. Their difference in the absence of broadcast sending at the client
 
 **For a more thorough documentation see [godoc](https://godoc.org/github.com/kanopeld/socket)**
+
+The project uses a standard MIT license. See more in LICENSEk
