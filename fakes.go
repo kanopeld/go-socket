@@ -12,13 +12,13 @@ type fakeServerClient struct{ Id string }
 func (c *fakeServerClient) ID() string { return c.Id }
 
 //Emit sends an event to the other side
-func (c *fakeServerClient) Emit(event string, msg interface{}) error { return nil }
-func (c *fakeServerClient) send(p *Package) error                    { return nil }
+func (c *fakeServerClient) Emit(event string, msg []byte) error { return nil }
+func (c *fakeServerClient) send(p *Package) error               { return nil }
 
 //On registers an event handler under the given name.
-func (c *fakeServerClient) On(event string, f interface{}) error { return nil }
+func (c *fakeServerClient) On(event string, f HandlerCallback) {}
 
-//Off deletes an event handler.
+//Off deletes an event handler. Return true if event was exist
 func (c *fakeServerClient) Off(event string) bool { return true }
 
 //Disconnect drop current connection. Send the appropriate message to the other side
@@ -28,7 +28,7 @@ func (c *fakeServerClient) Disconnect() {}
 func (c *fakeServerClient) Connection() net.Conn { return nil }
 
 //Broadcast sends an event to the other side to everyone in the specified room
-func (c *fakeServerClient) Broadcast(event string, msg interface{}) error { return nil }
+func (c *fakeServerClient) Broadcast(event string, msg []byte) error { return nil }
 
 //fakeNetConn the struct for emulate net.Conn interface. Used in tests only
 type fakeNetConn struct{}

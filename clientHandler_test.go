@@ -12,26 +12,17 @@ var (
 
 func TestClientHandler_Call(t *testing.T) {
 	convey.Convey("testing call client handler", t, func() {
-		ch := &clientHandler{client: &fakeServerClient{}, baseHandler: newHandler(nil, getCaller(""))}
-		err := ch.On("test", func() {})
-		convey.So(err, convey.ShouldBeNil)
-		err = ch.call("test", nil)
+		ch := &clientHandler{client: &fakeServerClient{}, baseHandler: newHandler(nil)}
+		ch.On("test", func(c Client, data []byte) error {
+			return nil
+		})
+		err := ch.call("test", nil)
 		convey.So(err, convey.ShouldBeNil)
 	})
 
 	convey.Convey("testing call client handler. room not exist", t, func() {
-		ch := &clientHandler{client: &fakeServerClient{}, baseHandler: newHandler(nil, getCaller(""))}
+		ch := &clientHandler{client: &fakeServerClient{}, baseHandler: newHandler(nil)}
 		err := ch.call("test", nil)
 		convey.So(err, convey.ShouldEqual, ErrEventNotExist)
-	})
-
-	convey.Convey("testing call client handler", t, func() {
-		ch := &clientHandler{client: &fakeServerClient{}, baseHandler: newHandler(nil, getCaller(""))}
-		err := ch.On("test", func(i string) error {
-			return testError
-		})
-		convey.So(err, convey.ShouldBeNil)
-		err = ch.call("test", nil)
-		convey.So(err, convey.ShouldEqual, testError)
 	})
 }

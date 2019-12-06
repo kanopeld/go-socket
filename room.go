@@ -22,7 +22,7 @@ type Room interface {
 	Len() int
 	//Send sends a message to the other side of all clients of this contact.
 	//It is possible to transfer the user to whom the message will not be transmitted
-	Send(ignore IdentifiableEmitter, event string, msg interface{}) error
+	Send(ignore IdentifiableEmitter, event string, msg []byte) error
 	//ClientExist check that given client exist in this room
 	ClientExist(c IdentifiableEmitter) bool
 }
@@ -77,7 +77,7 @@ func (r *room) Len() int {
 
 //Send sends a message to the other side of all clients of this contact.
 //It is possible to transfer the user to whom the message will not be transmitted
-func (r *room) Send(ignore IdentifiableEmitter, event string, msg interface{}) error {
+func (r *room) Send(ignore IdentifiableEmitter, event string, msg []byte) error {
 	r.Lock()
 main:
 	for _, c := range r.clients {

@@ -24,7 +24,7 @@ func NewServer(port string) (Server, error) {
 		return nil, err
 	}
 	s := &server{
-		baseHandler: newHandler(newDefaultBroadcast(), getCaller("SClient")),
+		baseHandler: newHandler(newDefaultBroadcast()),
 		ln:          ln,
 	}
 	return s, nil

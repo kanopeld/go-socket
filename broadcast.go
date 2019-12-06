@@ -18,7 +18,7 @@ const (
 //Broadcaster organizes work with broadcast messaging
 type Broadcaster interface {
 	//Broadcast sends an event to the other side to everyone in the specified room
-	Broadcast(event string, arg interface{}) error
+	Broadcast(event string, arg []byte) error
 }
 
 //BroadcastAdaptor Available only on the server side.
@@ -30,7 +30,7 @@ type BroadcastAdaptor interface {
 	//Leave deletes the transferred client from the specified room. If after removal there are no clients left in the room, it will also be deleted
 	Leave(room string, c IdentifiableEmitter) error
 	//Send sends a message to all participants in the specified room
-	Send(ignore IdentifiableEmitter, room, event string, msg interface{}) error
+	Send(ignore IdentifiableEmitter, room, event string, msg []byte) error
 	//Len return rooms counter
 	Len(room string) int
 }
@@ -84,7 +84,7 @@ func (b *broadcast) Leave(room string, c IdentifiableEmitter) error {
 	return nil
 }
 
-func (b *broadcast) Send(ignore IdentifiableEmitter, room, event string, msg interface{}) error {
+func (b *broadcast) Send(ignore IdentifiableEmitter, room, event string, msg []byte) error {
 	b.Lock()
 	r, ok := b.rooms[room]
 	b.Unlock()

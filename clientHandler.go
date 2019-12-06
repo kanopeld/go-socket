@@ -18,14 +18,19 @@ func (h *clientHandler) call(event string, data []byte) error {
 	if !ok {
 		return ErrEventNotExist
 	}
-	retV := c.call(h.client, data)
-	if len(retV) == 0 {
+	return c(h.client, data)
+}
+
+func (h *clientHandler) Broadcast(event string, msg []byte) error {
+	if h.BroadcastAdaptor == nil {
 		return nil
 	}
-	var err error
-	if last, ok := retV[len(retV)-1].Interface().(error); ok {
-		err = last
-		return err
+	return h.BroadcastAdaptor.Send(h.client, DefaultBroadcastRoomName, event, msg)
+}
+
+func newClientHandler(c Client, bh *baseHandler) *clientHandler {
+	return &clientHandler{
+		client:      c,
+		baseHandler: bh,
 	}
-	return nil
 }
