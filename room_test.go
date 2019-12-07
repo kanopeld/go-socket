@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var testRoom Room = getRoom()
+var testRoom = getRoom()
 
 func TestRoom_SetClient(t *testing.T) {
 	convey.Convey("testing room set client. regular case", t, func() {
@@ -16,7 +16,7 @@ func TestRoom_SetClient(t *testing.T) {
 
 	convey.Convey("testing room set client, duplicate client id", t, func() {
 		err := testRoom.SetClient(&fakeServerClient{id: "tests"})
-		convey.So(err, convey.ShouldEqual, ErrClientInRoomAlreadyExist)
+		convey.So(err, convey.ShouldEqual, ErrClientAlreadyInRoom)
 		convey.So(testRoom.Len(), convey.ShouldEqual, 1)
 	})
 
@@ -39,7 +39,7 @@ func TestRoom_RemoveClient(t *testing.T) {
 
 	convey.Convey("testing room set client, duplicate client id", t, func() {
 		err := testRoom.RemoveClient(&fakeServerClient{id: "tests"})
-		convey.So(err, convey.ShouldEqual, ErrClientInRoomNotExist)
+		convey.So(err, convey.ShouldEqual, ErrClientNotInRoom)
 		convey.So(testRoom.Len(), convey.ShouldEqual, 1)
 	})
 

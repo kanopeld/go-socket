@@ -35,7 +35,7 @@ type BroadcastAdaptor interface {
 	Len(room string) int
 }
 
-type rooms map[string]Room
+type rooms map[string]*Room
 
 type broadcast struct {
 	rooms
@@ -60,8 +60,8 @@ func (b *broadcast) Join(room string, c IdentifiableEmitter) error {
 		b.rooms[room] = r
 		b.Unlock()
 	}
-	if r.ClientExist(c) {
-		return ErrClientInRoomAlreadyExist
+	if r.ClientExists(c) {
+		return ErrClientAlreadyInRoom
 	}
 	return r.SetClient(c)
 }
