@@ -1,8 +1,9 @@
 package socket
 
 import (
-	"github.com/smartystreets/goconvey/convey"
 	"testing"
+
+	"github.com/smartystreets/goconvey/convey"
 )
 
 func TestDecodePackage(t *testing.T) {
@@ -13,8 +14,7 @@ func TestDecodePackage(t *testing.T) {
 		//Remove \n char. In real code this will remove by method ReadBytes("\n")!
 		comlPack := p[:len(p)-1]
 
-		pack, err := decodePackage(comlPack)
-		convey.So(err, convey.ShouldBeNil)
+		pack := decodePackage(comlPack)
 		convey.So(pack.PT, convey.ShouldEqual, PackTypeEvent)
 		convey.So(pack.Payload, convey.ShouldHaveLength, len(msgByte))
 
@@ -30,8 +30,7 @@ func TestDecodePackage(t *testing.T) {
 		//Remove \n char. In real code this will remove by method ReadBytes("\n")!
 		comlPack := p[:len(p)-1]
 
-		pack, err := decodePackage(comlPack)
-		convey.So(err, convey.ShouldBeNil)
+		pack := decodePackage(comlPack)
 		convey.So(pack.PT, convey.ShouldEqual, PackTypeEvent)
 		convey.So(pack.Payload, convey.ShouldHaveLength, len(msgByte)-1)
 
@@ -50,8 +49,7 @@ func TestDecodePackage(t *testing.T) {
 		//Remove \n char. In real code this will remove by method ReadBytes("\n")!
 		comlPack := p[:len(p)-1]
 
-		pack, err := decodePackage(comlPack)
-		convey.So(err, convey.ShouldBeNil)
+		pack := decodePackage(comlPack)
 		convey.So(pack.PT, convey.ShouldEqual, PackTypeEvent)
 		convey.So(pack.Payload, convey.ShouldHaveLength, len(msgByte))
 
