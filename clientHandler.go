@@ -3,7 +3,8 @@ package socket
 import "errors"
 
 var (
-	ErrEventNotExist = errors.New("events not exist")
+	// ErrEventNotExist is returned if the emited event does not exist
+	ErrEventNotExist = errors.New("event does not exist")
 )
 
 type clientHandler struct {

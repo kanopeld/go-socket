@@ -5,32 +5,30 @@ import (
 	"sync"
 )
 
-type Server interface {
-	Start()
-	Stop()
-	Handler
-}
-
-type server struct {
+// Server is an object managing your connection
+type Server struct {
 	*baseHandler
 	ln net.Listener
 	sync.Mutex
 	closeChan chan struct{}
 }
 
-func NewServer(port string) (Server, error) {
+// NewServer starts a tcp listener on a specified port and
+// returns an initialized Server struct
+func NewServer(port string) (*Server, error) {
 	ln, err := net.Listen("tcp", port)
 	if err != nil {
 		return nil, err
 	}
-	s := &server{
+	s := &Server{
 		baseHandler: newHandler(newDefaultBroadcast()),
 		ln:          ln,
+		closeChan:   make(chan struct{}),
 	}
 	return s, nil
 }
 
-func (s *server) loop() {
+func (s *Server) loop() {
 	defer func() {
 		_ = s.ln.Close()
 	}()
@@ -52,12 +50,14 @@ func (s *server) loop() {
 	}
 }
 
-func (s *server) Start() {
+// Start starts a server
+func (s *Server) Start() {
 	s.Lock()
 	defer s.Unlock()
 	s.loop()
 }
 
-func (s *server) Stop() {
+// Stop stops a server
+func (s *Server) Stop() {
 	s.closeChan <- struct{}{}
 }

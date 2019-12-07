@@ -1,13 +1,9 @@
 package socket
 
 import (
-	"errors"
-	"github.com/smartystreets/goconvey/convey"
 	"testing"
-)
 
-var (
-	testError = errors.New("test error")
+	"github.com/smartystreets/goconvey/convey"
 )
 
 func TestClientHandler_Call(t *testing.T) {
