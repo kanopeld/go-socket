@@ -15,42 +15,26 @@ const (
 	DefaultBroadcastRoomName = "defaultBroadcast"
 )
 
-// Broadcaster organizes work with broadcast messaging
-type Broadcaster interface {
-	// Broadcast sends an event to the other side to everyone in the specified room
-	Broadcast(event string, arg []byte) error
-}
-
-// BroadcastAdaptor Available only on the server side.
-// Organizes work with user associations in groups called "rooms".
-// Serves to structure and identify possible zones of connected clients.
-type BroadcastAdaptor interface {
-	// Join adds the transferred client to the specified room. If the room does not exist, it will be created.
-	Join(room string, c IdentifiableEmitter) error
-	// Leave deletes the transferred client from the specified room. If after removal there are no clients left in the room, it will also be deleted
-	Leave(room string, c IdentifiableEmitter) error
-	// Send sends a message to all participants in the specified room
-	Send(ignore IdentifiableEmitter, room, event string, msg []byte) error
-	// Len return rooms counter
-	Len(room string) int
-}
-
 type rooms map[string]*Room
 
-type broadcast struct {
+// Broadcaster is available only on the server side.
+// Organizes work with user associations in groups called "rooms".
+// Serves to structure and identify possible zones of connected clients.
+type Broadcaster struct {
 	rooms
 	sync.RWMutex
 }
 
-func newDefaultBroadcast() BroadcastAdaptor {
-	b := &broadcast{
+func newDefaultBroadcast() *Broadcaster {
+	b := &Broadcaster{
 		rooms: make(rooms, 0),
 	}
 	b.rooms[DefaultBroadcastRoomName] = getRoom()
 	return b
 }
 
-func (b *broadcast) Join(room string, c IdentifiableEmitter) error {
+// Join adds the transferred client to the specified room. If the room does not exist, it will be created.
+func (b *Broadcaster) Join(room string, c IdentifiableEmitter) error {
 	b.RLock()
 	r, ok := b.rooms[room]
 	b.RUnlock()
@@ -66,7 +50,8 @@ func (b *broadcast) Join(room string, c IdentifiableEmitter) error {
 	return r.SetClient(c)
 }
 
-func (b *broadcast) Leave(room string, c IdentifiableEmitter) error {
+// Leave deletes the transferred client from the specified room. If after removal there are no clients left in the room, it will also be deleted
+func (b *Broadcaster) Leave(room string, c IdentifiableEmitter) error {
 	b.RLock()
 	r, ok := b.rooms[room]
 	b.RUnlock()
@@ -84,7 +69,8 @@ func (b *broadcast) Leave(room string, c IdentifiableEmitter) error {
 	return nil
 }
 
-func (b *broadcast) Send(ignore IdentifiableEmitter, room, event string, msg []byte) error {
+// Send sends a message to all participants in the specified room
+func (b *Broadcaster) Send(ignore IdentifiableEmitter, room, event string, msg []byte) error {
 	b.Lock()
 	r, ok := b.rooms[room]
 	b.Unlock()
@@ -94,7 +80,8 @@ func (b *broadcast) Send(ignore IdentifiableEmitter, room, event string, msg []b
 	return r.Send(ignore, event, msg)
 }
 
-func (b *broadcast) Len(room string) int {
+// Len return the amount of clients in a room
+func (b *Broadcaster) Len(room string) int {
 	b.Lock()
 	r, ok := b.rooms[room]
 	b.Unlock()

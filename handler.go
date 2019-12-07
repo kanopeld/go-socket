@@ -7,14 +7,14 @@ type events map[string]HandlerCallback
 type baseHandler struct {
 	events
 	hMu sync.RWMutex
-	BroadcastAdaptor
+	*Broadcaster
 }
 
-func newHandler(adaptor BroadcastAdaptor) *baseHandler {
+func newHandler(adaptor *Broadcaster) *baseHandler {
 	return &baseHandler{
-		events:           make(events),
-		BroadcastAdaptor: adaptor,
-		hMu:              sync.RWMutex{},
+		events:      make(events),
+		Broadcaster: adaptor,
+		hMu:         sync.RWMutex{},
 	}
 }
 
@@ -25,7 +25,7 @@ func (h *baseHandler) On(event string, c HandlerCallback) {
 	h.hMu.Unlock()
 }
 
-// Off deletes an event handler. Return true if event was exist
+// Off deletes an event handler. Return true if event existed
 func (h *baseHandler) Off(event string) bool {
 	h.hMu.Lock()
 	_, ok := h.events[event]

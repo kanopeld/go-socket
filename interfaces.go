@@ -18,7 +18,8 @@ type IdentifiableEmitter interface {
 type Client interface {
 	Emitter
 	ider
-	Broadcaster
+	// Broadcast sends an event to everyone else in the room
+	Broadcast(event string, arg []byte) error
 	// Connection returns net.Conn with which the socket was created
 	Connection() net.Conn
 	// Disconnect drops current connection. Sends the appropriate message to the other side
