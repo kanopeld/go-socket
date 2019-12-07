@@ -10,6 +10,8 @@ var (
 	ErrClientNotInRoom = errors.New("client is not in this room")
 	// ErrClientAlreadyInRoom informs the client is already in a room
 	ErrClientAlreadyInRoom = errors.New("client is in the room already")
+	// ErrRoomNotExist informs that the room does not exist
+	ErrRoomNotExist = errors.New("room does not exist")
 )
 
 type clients map[string]IdentifiableEmitter

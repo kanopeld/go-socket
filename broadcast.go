@@ -1,13 +1,7 @@
 package socket
 
 import (
-	"errors"
 	"sync"
-)
-
-var (
-	// ErrRoomNotExist will return if called room not exist
-	ErrRoomNotExist = errors.New("room not exist")
 )
 
 const (

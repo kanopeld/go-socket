@@ -14,6 +14,7 @@ type dial struct {
 	disc bool
 }
 
+// NewDial connects to a server and initializes a client
 func NewDial(addr string) (Client, error) {
 	conn, err := net.Dial("tcp", addr)
 	if err != nil {

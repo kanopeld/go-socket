@@ -106,7 +106,7 @@ func ExampleNewDial_dialling() {
 
 	fmt.Println(c.Connection())
 
-	// Outputs: net.Conn object
+	// Output: net.Conn object
 }
 
 func ExampleNewServer_creation() {
