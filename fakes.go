@@ -6,10 +6,10 @@ import (
 )
 
 // fakeServerClient struct for emulate SClient interface. Used in tests only
-type fakeServerClient struct{ Id string }
+type fakeServerClient struct{ id string }
 
 // ID return the socket id
-func (c *fakeServerClient) ID() string { return c.Id }
+func (c *fakeServerClient) ID() string { return c.id }
 
 // Emit sends an event to the other side
 func (c *fakeServerClient) Emit(event string, msg []byte) error { return nil }
