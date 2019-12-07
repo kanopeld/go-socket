@@ -6,32 +6,32 @@ import (
 )
 
 var (
-	//ErrRoomNotExist will return if called room not exist
+	// ErrRoomNotExist will return if called room not exist
 	ErrRoomNotExist = errors.New("room not exist")
 )
 
 const (
-	//DefaultBroadcastRoomName name of default room in broadcast cluster. All new connections will be stored in room by this name
+	// DefaultBroadcastRoomName name of default room in broadcast cluster. All new connections will be stored in room by this name
 	DefaultBroadcastRoomName = "defaultBroadcast"
 )
 
-//Broadcaster organizes work with broadcast messaging
+// Broadcaster organizes work with broadcast messaging
 type Broadcaster interface {
-	//Broadcast sends an event to the other side to everyone in the specified room
+	// Broadcast sends an event to the other side to everyone in the specified room
 	Broadcast(event string, arg []byte) error
 }
 
-//BroadcastAdaptor Available only on the server side.
-//Organizes work with user associations in groups called "rooms".
-//Serves to structure and identify possible zones of connected clients.
+// BroadcastAdaptor Available only on the server side.
+// Organizes work with user associations in groups called "rooms".
+// Serves to structure and identify possible zones of connected clients.
 type BroadcastAdaptor interface {
-	//Join adds the transferred client to the specified room. If the room does not exist, it will be created.
+	// Join adds the transferred client to the specified room. If the room does not exist, it will be created.
 	Join(room string, c IdentifiableEmitter) error
-	//Leave deletes the transferred client from the specified room. If after removal there are no clients left in the room, it will also be deleted
+	// Leave deletes the transferred client from the specified room. If after removal there are no clients left in the room, it will also be deleted
 	Leave(room string, c IdentifiableEmitter) error
-	//Send sends a message to all participants in the specified room
+	// Send sends a message to all participants in the specified room
 	Send(ignore IdentifiableEmitter, room, event string, msg []byte) error
-	//Len return rooms counter
+	// Len return rooms counter
 	Len(room string) int
 }
 

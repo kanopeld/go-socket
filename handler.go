@@ -18,14 +18,14 @@ func newHandler(adaptor BroadcastAdaptor) *baseHandler {
 	}
 }
 
-//On registers an event handler under the given name.
+// On registers an event handler under the given name.
 func (h *baseHandler) On(event string, c HandlerCallback) {
 	h.hMu.Lock()
 	h.events[event] = c
 	h.hMu.Unlock()
 }
 
-//Off deletes an event handler. Return true if event was exist
+// Off deletes an event handler. Return true if event was exist
 func (h *baseHandler) Off(event string) bool {
 	h.hMu.Lock()
 	_, ok := h.events[event]

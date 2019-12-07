@@ -11,7 +11,7 @@ func TestDecodePackage(t *testing.T) {
 		msgByte := Message{Data: []byte("hello"), EventName: "test"}.MarshalBinary()
 		p := Package{PT: PackTypeEvent, Payload: msgByte}.MarshalBinary()
 
-		//Remove \n char. In real code this will remove by method ReadBytes("\n")!
+		// Remove \n char. In real code this will remove by method ReadBytes("\n")!
 		comlPack := p[:len(p)-1]
 
 		pack := decodePackage(comlPack)
@@ -27,7 +27,7 @@ func TestDecodePackage(t *testing.T) {
 		msgByte := Message{Data: append([]byte("hello"), []byte("\n")...), EventName: "test"}.MarshalBinary()
 		p := Package{PT: PackTypeEvent, Payload: msgByte}.MarshalBinary()
 
-		//Remove \n char. In real code this will remove by method ReadBytes("\n")!
+		// Remove \n char. In real code this will remove by method ReadBytes("\n")!
 		comlPack := p[:len(p)-1]
 
 		pack := decodePackage(comlPack)
@@ -46,7 +46,7 @@ func TestDecodePackage(t *testing.T) {
 		}.MarshalBinary()
 
 		p := Package{PT: PackTypeEvent, Payload: msgByte}.MarshalBinary()
-		//Remove \n char. In real code this will remove by method ReadBytes("\n")!
+		// Remove \n char. In real code this will remove by method ReadBytes("\n")!
 		comlPack := p[:len(p)-1]
 
 		pack := decodePackage(comlPack)
