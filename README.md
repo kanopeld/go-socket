@@ -117,4 +117,4 @@ In the example above, we considered the SClient interface that is used on the se
 
 **For a more thorough documentation see [godoc](https://godoc.org/github.com/kanopeld/socket)**
 
-The project uses a standard MIT license. See more in LICENSEk
+The project uses a standard MIT license. See more in LICENSE

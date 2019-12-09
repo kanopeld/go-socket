@@ -3,7 +3,8 @@ package socket
 import "errors"
 
 var (
-	ErrEventNotExist = errors.New("events not exist")
+	// ErrEventNotExist is returned if the emited event does not exist
+	ErrEventNotExist = errors.New("event does not exist")
 )
 
 type clientHandler struct {
@@ -22,10 +23,10 @@ func (h *clientHandler) call(event string, data []byte) error {
 }
 
 func (h *clientHandler) Broadcast(event string, msg []byte) error {
-	if h.BroadcastAdaptor == nil {
+	if h.Broadcaster == nil {
 		return nil
 	}
-	return h.BroadcastAdaptor.Send(h.client, DefaultBroadcastRoomName, event, msg)
+	return h.Broadcaster.Send(h.client, DefaultBroadcastRoomName, event, msg)
 }
 
 func newClientHandler(c Client, bh *baseHandler) *clientHandler {

@@ -49,10 +49,7 @@ func (c *client) loop() {
 			return
 		}
 
-		p, err := decodePackage(msg)
-		if err != nil {
-			return
-		}
+		p := decodePackage(msg)
 
 		switch p.PT {
 		case PackTypeConnectAccept:
