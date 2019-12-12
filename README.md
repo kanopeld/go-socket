@@ -5,6 +5,7 @@ TCP Socket.io-like library
 [![](https://img.shields.io/badge/godoc-reference-5272B4.svg)](https://godoc.org/github.com/kanopeld/socket)
 [![Go Report Card](https://goreportcard.com/badge/github.com/kanopeld/socket)](https://goreportcard.com/report/github.com/kanopeld/socket)
 ![](https://github.com/kanopeld/socket/workflows/ci/badge.svg)
+![](https://coveralls.io/github/igm)
 
 ### Quick start
 
