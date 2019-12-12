@@ -7,8 +7,8 @@ type ider interface {
 	ID() string
 }
 
-// IdentifiableEmitter is an extension of Emiter
-type IdentifiableEmitter interface {
+// identifiableEmitter is an extension of Emiter
+type identifiableEmitter interface {
 	ider
 	// Emitter organizes sending events to the other side
 	Emitter
@@ -32,6 +32,21 @@ type Client interface {
 
 type looper interface {
 	loop()
+}
+
+type roomer interface {
+	SetClient(c identifiableEmitter) error
+	RemoveClient(c identifiableEmitter) error
+	Len() int
+	Send(ignore identifiableEmitter, event string, msg []byte) error
+	ClientExists(c identifiableEmitter) (ok bool)
+}
+
+type broadcaster interface {
+	Join(room string, c identifiableEmitter) error
+	Leave(room string, c identifiableEmitter) error
+	Send(ignore identifiableEmitter, room, event string, msg []byte) error
+	Len(room string) int
 }
 
 // HandlerCallback is function that gets called on a certain event
