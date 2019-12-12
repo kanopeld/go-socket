@@ -50,7 +50,6 @@ func (c *client) loop() {
 		}
 
 		p := decodePackage(msg)
-
 		switch p.PT {
 		case PackTypeConnectAccept:
 			if err := c.call(ConnectionName, nil); err != nil {

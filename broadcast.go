@@ -9,18 +9,18 @@ const (
 	DefaultBroadcastRoomName = "defaultBroadcast"
 )
 
-type rooms map[string]*Room
+type rooms map[string]roomer
 
-// Broadcaster is available only on the server side.
+// Broadcast is available only on the server side.
 // Organizes work with user associations in groups called "rooms".
 // Serves to structure and identify possible zones of connected clients.
-type Broadcaster struct {
+type broadcast struct {
 	rooms
 	sync.RWMutex
 }
 
-func newDefaultBroadcast() *Broadcaster {
-	b := &Broadcaster{
+func newDefaultBroadcast() broadcaster {
+	b := &broadcast{
 		rooms: make(rooms, 0),
 	}
 	b.rooms[DefaultBroadcastRoomName] = getRoom()
@@ -28,7 +28,7 @@ func newDefaultBroadcast() *Broadcaster {
 }
 
 // Join adds the transferred client to the specified room. If the room does not exist, it will be created.
-func (b *Broadcaster) Join(room string, c IdentifiableEmitter) error {
+func (b *broadcast) Join(room string, c identifiableEmitter) error {
 	b.RLock()
 	r, ok := b.rooms[room]
 	b.RUnlock()
@@ -45,7 +45,7 @@ func (b *Broadcaster) Join(room string, c IdentifiableEmitter) error {
 }
 
 // Leave deletes the transferred client from the specified room. If after removal there are no clients left in the room, it will also be deleted
-func (b *Broadcaster) Leave(room string, c IdentifiableEmitter) error {
+func (b *broadcast) Leave(room string, c identifiableEmitter) error {
 	b.RLock()
 	r, ok := b.rooms[room]
 	b.RUnlock()
@@ -64,7 +64,7 @@ func (b *Broadcaster) Leave(room string, c IdentifiableEmitter) error {
 }
 
 // Send sends a message to all participants in the specified room
-func (b *Broadcaster) Send(ignore IdentifiableEmitter, room, event string, msg []byte) error {
+func (b *broadcast) Send(ignore identifiableEmitter, room, event string, msg []byte) error {
 	b.Lock()
 	r, ok := b.rooms[room]
 	b.Unlock()
@@ -75,7 +75,7 @@ func (b *Broadcaster) Send(ignore IdentifiableEmitter, room, event string, msg [
 }
 
 // Len return the amount of clients in a room
-func (b *Broadcaster) Len(room string) int {
+func (b *broadcast) Len(room string) int {
 	b.Lock()
 	r, ok := b.rooms[room]
 	b.Unlock()

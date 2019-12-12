@@ -7,13 +7,13 @@ type events map[string]HandlerCallback
 type baseHandler struct {
 	events
 	hMu sync.RWMutex
-	*Broadcaster
+	broadcaster
 }
 
-func newHandler(adaptor *Broadcaster) *baseHandler {
+func newHandler(adaptor broadcaster) *baseHandler {
 	return &baseHandler{
 		events:      make(events),
-		Broadcaster: adaptor,
+		broadcaster: adaptor,
 		hMu:         sync.RWMutex{},
 	}
 }
