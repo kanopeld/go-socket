@@ -14,7 +14,7 @@ var (
 	ErrRoomNotExist = errors.New("room does not exist")
 )
 
-type clients map[string]identifiableEmitter
+type clients map[string]Client
 
 // Room serves to group of customers and work immediately with this group
 type room struct {
@@ -30,7 +30,7 @@ func getRoom() roomer {
 }
 
 // SetClient adds a client to this room
-func (r *room) SetClient(c identifiableEmitter) error {
+func (r *room) SetClient(c Client) error {
 	if r.ClientExists(c) {
 		return ErrClientAlreadyInRoom
 	}
@@ -42,7 +42,7 @@ func (r *room) SetClient(c identifiableEmitter) error {
 }
 
 // RemoveClient removes a client from this room
-func (r *room) RemoveClient(c identifiableEmitter) error {
+func (r *room) RemoveClient(c Client) error {
 	if !r.ClientExists(c) {
 		return ErrClientNotInRoom
 	}
@@ -62,7 +62,7 @@ func (r *room) Len() int {
 
 // Send sends a message to the other all other clients
 // It is possible to transfer the user to whom the message will not be transmitted
-func (r *room) Send(ignore identifiableEmitter, event string, msg []byte) error {
+func (r *room) Send(ignore Client, event string, msg []byte) error {
 	r.Lock()
 main:
 	for _, c := range r.clients {
@@ -76,7 +76,7 @@ main:
 }
 
 // ClientExists checks if a user is in this room
-func (r *room) ClientExists(c identifiableEmitter) (ok bool) {
+func (r *room) ClientExists(c Client) (ok bool) {
 	r.RLock()
 	_, ok = r.clients[c.ID()]
 	r.RUnlock()

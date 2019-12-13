@@ -23,7 +23,7 @@ func (h *clientHandler) call(event string, data []byte) error {
 }
 
 func (h *clientHandler) Broadcast(event string, msg []byte) error {
-	if h.broadcaster == nil {
+	if h.Broadcaster == nil {
 		return nil
 	}
 	return h.Send(h.client, DefaultBroadcastRoomName, event, msg)
