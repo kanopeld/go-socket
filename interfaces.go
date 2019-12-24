@@ -23,6 +23,7 @@ type Client interface {
 	// Disconnect drops current connection. Sends the appropriate message to the other side
 	Disconnect()
 	EventHandler
+	Broadcaster
 }
 
 type looper interface {
