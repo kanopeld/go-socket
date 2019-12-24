@@ -7,6 +7,13 @@ type Ider interface {
 	ID() string
 }
 
+type EventHandler interface {
+	// On registers an event handler under the given name
+	On(event string, c HandlerCallback)
+	// Off deletes an event handler. Return true if event existed
+	Off(event string) bool
+}
+
 // Client includes all basic functions for a client
 type Client interface {
 	Emitter
@@ -17,10 +24,7 @@ type Client interface {
 	Connection() net.Conn
 	// Disconnect drops current connection. Sends the appropriate message to the other side
 	Disconnect()
-	// On registers an event handler under the given name
-	On(event string, c HandlerCallback)
-	// Off deletes an event handler. Return true if event existed
-	Off(event string) bool
+	EventHandler
 }
 
 type looper interface {
@@ -35,11 +39,24 @@ type roomer interface {
 	ClientExists(c Client) (ok bool)
 }
 
+type broadcastAdapter interface {
+	join(room string, c Client) error
+	leave(room string, c Client) error
+	send(ignore Client, room, event string, msg []byte) error
+	len(room string) int
+}
+
+//Broadcaster now available only for server-side clients, for dial client it is stub now
 type Broadcaster interface {
-	Join(room string, c Client) error
-	Leave(room string, c Client) error
-	Send(ignore Client, room, event string, msg []byte) error
-	Len(room string) int
+	Join(room string) error
+	Leave(room string) error
+	BroadcastTo(room, event string, msg []byte) error
+}
+
+type Server interface {
+	Start()
+	Stop()
+	EventHandler
 }
 
 // HandlerCallback is function that gets called on a certain event

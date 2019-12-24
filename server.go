@@ -6,7 +6,7 @@ import (
 )
 
 // Server is an object managing your connection
-type Server struct {
+type server struct {
 	*baseHandler
 	ln net.Listener
 	sync.Mutex
@@ -15,12 +15,12 @@ type Server struct {
 
 // NewServer starts a tcp listener on a specified port and
 // returns an initialized Server struct
-func NewServer(port string) (*Server, error) {
+func NewServer(port string) (*server, error) {
 	ln, err := net.Listen("tcp", port)
 	if err != nil {
 		return nil, err
 	}
-	s := &Server{
+	s := &server{
 		baseHandler: newHandler(newDefaultBroadcast()),
 		ln:          ln,
 		closeChan:   make(chan struct{}),
@@ -28,7 +28,7 @@ func NewServer(port string) (*Server, error) {
 	return s, nil
 }
 
-func (s *Server) loop() {
+func (s *server) loop() {
 	defer func() {
 		_ = s.ln.Close()
 	}()
@@ -51,13 +51,13 @@ func (s *Server) loop() {
 }
 
 // Start starts a server
-func (s *Server) Start() {
+func (s *server) Start() {
 	s.Lock()
 	defer s.Unlock()
 	s.loop()
 }
 
 // Stop stops a server
-func (s *Server) Stop() {
+func (s *server) Stop() {
 	s.closeChan <- struct{}{}
 }

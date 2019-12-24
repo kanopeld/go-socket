@@ -8,8 +8,8 @@ import (
 
 func TestDecodePackage(t *testing.T) {
 	convey.Convey("test decode packet", t, func() {
-		msgByte := Message{Data: []byte("hello"), EventName: "test"}.MarshalBinary()
-		p := Package{PT: PackTypeEvent, Payload: msgByte}.MarshalBinary()
+		msgByte := message{Data: []byte("hello"), EventName: "test"}.MarshalBinary()
+		p := sockPackage{PT: PackTypeEvent, Payload: msgByte}.MarshalBinary()
 
 		// Remove \n char. In real code this will remove by method ReadBytes("\n")!
 		comlPack := p[:len(p)-1]
@@ -24,8 +24,8 @@ func TestDecodePackage(t *testing.T) {
 	})
 
 	convey.Convey("test decode packet", t, func() {
-		msgByte := Message{Data: append([]byte("hello"), []byte("\n")...), EventName: "test"}.MarshalBinary()
-		p := Package{PT: PackTypeEvent, Payload: msgByte}.MarshalBinary()
+		msgByte := message{Data: append([]byte("hello"), []byte("\n")...), EventName: "test"}.MarshalBinary()
+		p := sockPackage{PT: PackTypeEvent, Payload: msgByte}.MarshalBinary()
 
 		// Remove \n char. In real code this will remove by method ReadBytes("\n")!
 		comlPack := p[:len(p)-1]
@@ -40,12 +40,12 @@ func TestDecodePackage(t *testing.T) {
 	})
 
 	convey.Convey("test decode packet with bytes message data", t, func() {
-		msgByte := Message{
+		msgByte := message{
 			EventName: "test",
 			Data:      []byte{0x1, 0x2, 0x03},
 		}.MarshalBinary()
 
-		p := Package{PT: PackTypeEvent, Payload: msgByte}.MarshalBinary()
+		p := sockPackage{PT: PackTypeEvent, Payload: msgByte}.MarshalBinary()
 		// Remove \n char. In real code this will remove by method ReadBytes("\n")!
 		comlPack := p[:len(p)-1]
 

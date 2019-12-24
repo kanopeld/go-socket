@@ -13,7 +13,7 @@ func (c *fakeServerClient) ID() string { return c.id }
 
 // Emit sends an event to the other side
 func (c *fakeServerClient) Emit(event string, msg []byte) error { return nil }
-func (c *fakeServerClient) send(p *Package) error               { return nil }
+func (c *fakeServerClient) send(p *sockPackage) error           { return nil }
 
 // On registers an event handler under the given name.
 func (c *fakeServerClient) On(event string, f HandlerCallback) {}

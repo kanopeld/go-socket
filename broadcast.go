@@ -19,7 +19,7 @@ type broadcast struct {
 	sync.RWMutex
 }
 
-func newDefaultBroadcast() Broadcaster {
+func newDefaultBroadcast() broadcastAdapter {
 	b := &broadcast{
 		rooms: make(rooms, 0),
 	}
@@ -28,7 +28,7 @@ func newDefaultBroadcast() Broadcaster {
 }
 
 // Join adds the transferred client to the specified room. If the room does not exist, it will be created.
-func (b *broadcast) Join(room string, c Client) error {
+func (b *broadcast) join(room string, c Client) error {
 	b.RLock()
 	r, ok := b.rooms[room]
 	b.RUnlock()
@@ -45,7 +45,7 @@ func (b *broadcast) Join(room string, c Client) error {
 }
 
 // Leave deletes the transferred client from the specified room. If after removal there are no clients left in the room, it will also be deleted
-func (b *broadcast) Leave(room string, c Client) error {
+func (b *broadcast) leave(room string, c Client) error {
 	b.RLock()
 	r, ok := b.rooms[room]
 	b.RUnlock()
@@ -64,7 +64,7 @@ func (b *broadcast) Leave(room string, c Client) error {
 }
 
 // Send sends a message to all participants in the specified room
-func (b *broadcast) Send(ignore Client, room, event string, msg []byte) error {
+func (b *broadcast) send(ignore Client, room, event string, msg []byte) error {
 	b.Lock()
 	r, ok := b.rooms[room]
 	b.Unlock()
@@ -75,7 +75,7 @@ func (b *broadcast) Send(ignore Client, room, event string, msg []byte) error {
 }
 
 // Len return the amount of clients in a room
-func (b *broadcast) Len(room string) int {
+func (b *broadcast) len(room string) int {
 	b.Lock()
 	r, ok := b.rooms[room]
 	b.Unlock()

@@ -23,22 +23,22 @@ func newClient(conn net.Conn, base *baseHandler) (looper, error) {
 	}
 	nc.setNewID()
 	nc.clientHandler = newClientHandler(nc, base)
-	err := nc.Join(DefaultBroadcastRoomName, nc)
+	err := nc.join(DefaultBroadcastRoomName, nc)
 	if err != nil {
-		_ = nc.Leave(DefaultBroadcastRoomName, nc)
+		_ = nc.leave(DefaultBroadcastRoomName, nc)
 		return nil, err
 	}
 	return nc, nil
 }
 
 func (c *client) sendConnect() {
-	_, _ = c.conn.Write(Package{PT: PackTypeConnect, Payload: []byte(c.id)}.MarshalBinary())
+	_, _ = c.conn.Write(sockPackage{PT: PackTypeConnect, Payload: []byte(c.id)}.MarshalBinary())
 }
 
 func (c *client) loop() {
 	defer func() {
 		c.Disconnect()
-		_ = c.Leave(DefaultBroadcastRoomName, c)
+		_ = c.leave(DefaultBroadcastRoomName, c)
 	}()
 
 	c.sendConnect()
@@ -79,7 +79,7 @@ func (c *client) Disconnect() {
 		return
 	}
 	c.disc = true
-	_ = c.send(&Package{PT: PackTypeDisconnect})
+	_ = c.send(&sockPackage{PT: PackTypeDisconnect})
 	_ = c.call(DisconnectionName, nil)
 	_ = c.conn.Close()
 }
