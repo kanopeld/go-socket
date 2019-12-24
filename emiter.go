@@ -21,5 +21,5 @@ type defaultEmitter struct {
 
 // Emit sends an event to the other side
 func (de *defaultEmitter) Emit(event string, arg []byte) error {
-	return de.send(&Package{PT: PackTypeEvent, Payload: Message{EventName: event, Data: arg}.MarshalBinary()})
+	return de.send(&sockPackage{PT: PackTypeEvent, Payload: message{EventName: event, Data: arg}.MarshalBinary()})
 }

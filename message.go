@@ -5,8 +5,8 @@ const (
 	charEndEventName   = byte(']')
 )
 
-// Message stores information about a single message
-type Message struct {
+// message stores information about a single message
+type message struct {
 	// EventName is a custom event name chosen by the user
 	EventName string
 	// Data stores all the sent data
@@ -14,7 +14,7 @@ type Message struct {
 }
 
 // MarshalBinary serializes a message into bytes
-func (m Message) MarshalBinary() (res []byte) {
+func (m message) MarshalBinary() (res []byte) {
 	res = append(res, charStartEventName)
 	res = append(res, []byte(m.EventName)...)
 	res = append(res, charEndEventName)
@@ -23,7 +23,7 @@ func (m Message) MarshalBinary() (res []byte) {
 }
 
 // decodeMessage splits a given message into its EventName and Data
-func decodeMessage(data []byte) (msg Message) {
+func decodeMessage(data []byte) (msg message) {
 	start := false
 	end := false
 	endAt := 0
