@@ -8,7 +8,7 @@ import (
 
 func TestMessage_MarshalBinary(t *testing.T) {
 	convey.Convey("test encode/decode message", t, func() {
-		msg := Message{
+		msg := message{
 			EventName: "test",
 			Data:      []byte("hello test"),
 		}
@@ -22,7 +22,7 @@ func TestMessage_MarshalBinary(t *testing.T) {
 	})
 
 	convey.Convey("test decode bytes msg data", t, func() {
-		msg := Message{
+		msg := message{
 			EventName: "test",
 			Data:      []byte{0x1, 0x2, 0x03},
 		}

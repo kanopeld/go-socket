@@ -19,8 +19,8 @@ func (pt PackageType) Byte() byte {
 	return byte(pt)
 }
 
-// Package stores information about a single package
-type Package struct {
+// package stores information about a single package
+type sockPackage struct {
 	// PT is the type of a package
 	PT PackageType
 	// Payload usually includes a message
@@ -28,7 +28,7 @@ type Package struct {
 }
 
 // MarshalBinary serializes a package into bytes
-func (p Package) MarshalBinary() []byte {
+func (p sockPackage) MarshalBinary() []byte {
 	b := make([]byte, 1)
 	b[0] = p.PT.Byte()
 	if len(p.Payload) > 0 {
@@ -39,11 +39,11 @@ func (p Package) MarshalBinary() []byte {
 }
 
 // decodePackage creates a package from a given message
-func decodePackage(msg []byte) Package {
+func decodePackage(msg []byte) sockPackage {
 	if msg[len(msg)-1] == '\n' {
 		msg = msg[:len(msg)-1]
 	}
-	p := Package{
+	p := sockPackage{
 		PT:      PackageType(msg[0]),
 		Payload: msg[1:],
 	}

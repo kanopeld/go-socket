@@ -43,7 +43,7 @@ func (d *dial) Disconnect() {
 		return
 	}
 	d.disc = true
-	_ = d.send(&Package{PT: PackTypeDisconnect})
+	_ = d.send(&sockPackage{PT: PackTypeDisconnect})
 	_ = d.call("disconnection", nil)
 	_ = d.conn.Close()
 }
@@ -65,7 +65,7 @@ func (d *dial) loop() {
 		switch p.PT {
 		case PackTypeConnect:
 			d.id = string(p.Payload)
-			if err = d.send(&Package{PT: PackTypeConnectAccept}); err != nil {
+			if err = d.send(&sockPackage{PT: PackTypeConnectAccept}); err != nil {
 				return
 			}
 

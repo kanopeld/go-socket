@@ -23,10 +23,31 @@ func (h *clientHandler) call(event string, data []byte) error {
 }
 
 func (h *clientHandler) Broadcast(event string, msg []byte) error {
-	if h.Broadcaster == nil {
+	if h.broadcastAdapter == nil {
 		return nil
 	}
-	return h.Send(h.client, DefaultBroadcastRoomName, event, msg)
+	return h.broadcastAdapter.send(h.client, DefaultBroadcastRoomName, event, msg)
+}
+
+func (h *clientHandler) Join(room string) error {
+	if h.broadcastAdapter == nil {
+		return nil
+	}
+	return h.broadcastAdapter.join(room, h.client)
+}
+
+func (h *clientHandler) Leave(room string) error {
+	if h.broadcastAdapter == nil {
+		return nil
+	}
+	return h.broadcastAdapter.leave(room, h.client)
+}
+
+func (h *clientHandler) BroadcastTo(room, event string, msg []byte) error {
+	if h.broadcastAdapter == nil {
+		return nil
+	}
+	return h.broadcastAdapter.send(h.client, room, event, msg)
 }
 
 func newClientHandler(c Client, bh *baseHandler) *clientHandler {
