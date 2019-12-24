@@ -18,13 +18,12 @@ type EventHandler interface {
 type Client interface {
 	Emitter
 	Ider
-	// Broadcast sends an event to everyone else in the room
-	Broadcast(event string, arg []byte) error
 	// Connection returns net.Conn with which the socket was created
 	Connection() net.Conn
 	// Disconnect drops current connection. Sends the appropriate message to the other side
 	Disconnect()
 	EventHandler
+	Broadcaster
 }
 
 type looper interface {
@@ -48,9 +47,14 @@ type broadcastAdapter interface {
 
 //Broadcaster now available only for server-side clients, for dial client it is stub now
 type Broadcaster interface {
+	//Join add called client into room by given name, if there is no room it will be created
 	Join(room string) error
+	//Leave remove called client from room by given name, if after deleting the user in the room no one is left she will be deleted too
 	Leave(room string) error
+	// BroadcastTo sends an event to everyone else in the room by given name
 	BroadcastTo(room, event string, msg []byte) error
+	// Broadcast sends an event to everyone else in the room default("defaultBroadcast") room
+	Broadcast(event string, arg []byte) error
 }
 
 type Server interface {

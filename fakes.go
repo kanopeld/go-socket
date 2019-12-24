@@ -30,6 +30,12 @@ func (c *fakeServerClient) Connection() net.Conn { return nil }
 // Broadcast sends an event to the other side to everyone in the specified room
 func (c *fakeServerClient) Broadcast(event string, msg []byte) error { return nil }
 
+func (c *fakeServerClient) BroadcastTo(room, event string, msg []byte) error { return nil }
+
+func (c *fakeServerClient) Join(room string) error { return nil }
+
+func (c *fakeServerClient) Leave(room string) error { return nil }
+
 // fakeNetConn the struct for emulate net.Conn interface. Used in tests only
 type fakeNetConn struct{}
 
